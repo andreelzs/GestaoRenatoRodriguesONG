@@ -1,0 +1,50 @@
+{% extends "core/base.html" %} {% block title %} Página Inicial - {{ block.super
+}} {% endblock title %} {% block content %}
+<div class="container mt-5">
+  <div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+      <h1 class="display-5 fw-bold">{{ titulo_pagina }}</h1>
+      <p class="col-md-8 fs-4">{{ mensagem_boas_vindas }}</p>
+      {% if user.is_authenticated %}
+      <p>Você está logado como {{ user.username }}.</p>
+      {# <a href="#" class="btn btn-primary btn-lg" type="button">Ir para o Dashboard</a> #}
+    {% else %}
+      <p>Faça login para acessar todas as funcionalidades.</p>
+      {# <a href="#" class="btn btn-primary btn-lg" type="button">Entrar</a> #}
+      {# <a href="#" class="btn btn-secondary btn-lg" type="button">Cadastre-se</a> #}
+    {% endif %}
+    </div>
+  </div>
+
+  <div class="row align-items-md-stretch">
+    <div class="col-md-6">
+      <div class="h-100 p-5 text-bg-dark rounded-3">
+        <h2>Sobre a ONG</h2>
+        <p>
+          Aqui você pode adicionar uma breve descrição sobre a missão, visão e
+          valores da ONG. Destaque o impacto positivo que a organização busca
+          gerar na comunidade.
+        </p>
+        {#
+        <button class="btn btn-outline-light" type="button">Saiba Mais</button>
+        #}
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="h-100 p-5 bg-light border rounded-3">
+        <h2>Como Ajudar</h2>
+        <p>
+          Detalhe as formas como as pessoas podem contribuir, seja através de
+          voluntariado, doações, ou parcerias. Inclua links ou informações de
+          contato relevantes.
+        </p>
+        {#
+        <button class="btn btn-outline-secondary" type="button">
+          Quero Ajudar
+        </button>
+        #}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

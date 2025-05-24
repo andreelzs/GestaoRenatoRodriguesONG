@@ -1,0 +1,66 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ titulo_pagina }} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>{{ titulo_pagina }}</h1>
+        <a href="{% url 'voluntarios:cadastrar_voluntario' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Adicionar Novo Voluntário
+        </a>
+    </div>
+
+    {% if voluntarios %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nome Completo</th>
+                        <th>CPF</th>
+                        <th>Telefone</th>
+                        <th>Email (Usuário)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for voluntario in voluntarios %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'voluntarios:detalhar_voluntario' voluntario.id %}">
+                                {{ voluntario.nome_completo }}
+                            </a>
+                        </td>
+                        <td>{{ voluntario.cpf|default:"Não informado" }}</td>
+                        <td>{{ voluntario.telefone|default:"Não informado" }}</td>
+                        <td>{{ voluntario.usuario.email|default:"Não informado" }}</td>
+                        <td>
+                            <a href="{% url 'voluntarios:editar_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <a href="{% url 'voluntarios:excluir_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-danger" title="Inativar">
+                                <i class="fas fa-trash-alt"></i> Inativar
+                            </a>
+                            {# Ícones FontAwesome podem ser adicionados se o FontAwesome estiver incluído no projeto #}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Nenhum voluntário cadastrado ainda. 
+            <a href="{% url 'voluntarios:cadastrar_voluntario' %}" class="alert-link">Clique aqui para adicionar o primeiro!</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{{ block.super }}
+<!-- Se precisar de JS específico para esta página -->
+<script>
+    // Exemplo: console.log("Página de listagem de voluntários carregada.");
+</script>
+{% endblock scripts %}

@@ -1,0 +1,74 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ titulo_pagina }} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ titulo_pagina }}</h1>
+    <hr>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                {{ form.titulo.label_tag }}
+                {{ form.titulo }}
+                {% if form.titulo.errors %}<div class="invalid-feedback d-block">{{ form.titulo.errors|join:", " }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{ form.descricao.label_tag }}
+            {{ form.descricao }}
+            {% if form.descricao.errors %}<div class="invalid-feedback d-block">{{ form.descricao.errors|join:", " }}</div>{% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.status.label_tag }}
+                {{ form.status }}
+                {% if form.status.errors %}<div class="invalid-feedback d-block">{{ form.status.errors|join:", " }}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.prioridade.label_tag }}
+                {{ form.prioridade }}
+                {% if form.prioridade.errors %}<div class="invalid-feedback d-block">{{ form.prioridade.errors|join:", " }}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.data_prevista_conclusao.label_tag }}
+                {{ form.data_prevista_conclusao }}
+                {% if form.data_prevista_conclusao.errors %}<div class="invalid-feedback d-block">{{ form.data_prevista_conclusao.errors|join:", " }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{ form.voluntario_responsavel.label_tag }}
+            {{ form.voluntario_responsavel }}
+            {% if form.voluntario_responsavel.errors %}<div class="invalid-feedback d-block">{{ form.voluntario_responsavel.errors|join:", " }}</div>{% endif %}
+            {% if form.voluntario_responsavel.help_text %}
+                <small class="form-text text-muted">{{ form.voluntario_responsavel.help_text }}</small>
+            {% endif %}
+        </div>
+        
+        <div class="mb-3">
+            {{ form.observacoes.label_tag }}
+            {{ form.observacoes }}
+            {% if form.observacoes.errors %}<div class="invalid-feedback d-block">{{ form.observacoes.errors|join:", " }}</div>{% endif %}
+        </div>
+
+        {# O campo 'atribuido_por' é preenchido na view, não aparece no formulário #}
+        {# O campo 'data_conclusao_efetiva' é preenchido na view, não aparece no formulário de criação/edição direta #}
+
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Salvar Tarefa
+            </button>
+            <a href="{% if tarefa %}{% url 'tarefas:detalhar_tarefa' tarefa.id %}{% else %}{% url 'tarefas:listar_tarefas' %}{% endif %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock content %}

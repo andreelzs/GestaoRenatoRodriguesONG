@@ -1,0 +1,106 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ titulo_pagina }} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ titulo_pagina }}</h1>
+    <hr>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        {# Renderização manual dos campos para maior controle ou usar {{ form|crispy }} se crispy_forms estiver configurado #}
+        {# Se não usar crispy, pode iterar sobre os campos: {{ form.as_p }} ou campo a campo #}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.nome_completo.label_tag }}
+                {{ form.nome_completo }}
+                {% if form.nome_completo.errors %}<div class="invalid-feedback d-block">{{ form.nome_completo.errors|join:", " }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.cpf.label_tag }}
+                {{ form.cpf }}
+                {% if form.cpf.errors %}<div class="invalid-feedback d-block">{{ form.cpf.errors|join:", " }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.data_nascimento.label_tag }}
+                {{ form.data_nascimento }}
+                {% if form.data_nascimento.errors %}<div class="invalid-feedback d-block">{{ form.data_nascimento.errors|join:", " }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.telefone.label_tag }}
+                {{ form.telefone }}
+                {% if form.telefone.errors %}<div class="invalid-feedback d-block">{{ form.telefone.errors|join:", " }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{ form.endereco.label_tag }}
+            {{ form.endereco }}
+            {% if form.endereco.errors %}<div class="invalid-feedback d-block">{{ form.endereco.errors|join:", " }}</div>{% endif %}
+        </div>
+
+        <hr>
+        <h4>Informações da Conta de Usuário</h4>
+        <p class="text-muted small">Estas informações serão usadas para o login do voluntário no sistema.</p>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {% if form.username.errors %}<div class="invalid-feedback d-block">{{ form.username.errors|join:", " }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {% if form.email.errors %}<div class="invalid-feedback d-block">{{ form.email.errors|join:", " }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.password.label_tag }}
+                {% if voluntario %} {# Se estiver editando, a senha é opcional #}
+                    <small class="form-text text-muted"> (Deixe em branco para não alterar)</small>
+                {% endif %}
+                {{ form.password }}
+                {% if form.password.errors %}<div class="invalid-feedback d-block">{{ form.password.errors|join:", " }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.confirmar_password.label_tag }}
+                {{ form.confirmar_password }}
+                {% if form.confirmar_password.errors %}<div class="invalid-feedback d-block">{{ form.confirmar_password.errors|join:", " }}</div>{% endif %}
+            </div>
+        </div>
+        
+        <hr>
+        <h4>Detalhes Adicionais do Voluntário</h4>
+
+        <div class="mb-3">
+            {{ form.areas_interesse.label_tag }}
+            {{ form.areas_interesse }}
+            {% if form.areas_interesse.errors %}<div class="invalid-feedback d-block">{{ form.areas_interesse.errors|join:", " }}</div>{% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.disponibilidade.label_tag }}
+            {{ form.disponibilidade }}
+            {% if form.disponibilidade.errors %}<div class="invalid-feedback d-block">{{ form.disponibilidade.errors|join:", " }}</div>{% endif %}
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Salvar
+            </button>
+            <a href="{% if voluntario %}{% url 'voluntarios:detalhar_voluntario' voluntario.id %}{% else %}{% url 'voluntarios:listar_voluntarios' %}{% endif %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock content %}
