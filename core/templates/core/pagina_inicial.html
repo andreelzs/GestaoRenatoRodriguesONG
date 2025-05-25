@@ -6,11 +6,11 @@
       <h1 class="display-5 fw-bold">{{ titulo_pagina }}</h1>
       <p class="col-md-8 fs-4">{{ mensagem_boas_vindas }}</p>
       {% if user.is_authenticated %}
-      <p>Você está logado como {{ user.username }}.</p>
+      <p>Você está logado como, bem vindo {{ user.username }}.</p>
       {# <a href="#" class="btn btn-primary btn-lg" type="button">Ir para o Dashboard</a> #}
     {% else %}
       <p>Faça login para acessar todas as funcionalidades.</p>
-      <a href="{% url 'contas:login' %}" class="btn btn-primary btn-lg mt-3" type="button">Entrar</a>
+      <a href="{% url 'contas:login' %}" class="btn btn-primary btn-lg mt-3" type="button">Clique para logar</a>
       {# <a href="#" class="btn btn-primary btn-lg" type="button">Entrar</a> #}
       {# <a href="#" class="btn btn-secondary btn-lg" type="button">Cadastre-se</a> #}
     {% endif %}
