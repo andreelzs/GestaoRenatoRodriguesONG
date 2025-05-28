@@ -1,10 +1,23 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}{{ titulo_pagina }} - {{ block.super }}{% endblock title %}
 
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">{{ titulo_pagina }}</h1>
+
+    {# Dados JSON para os gráficos #}
+    {{ status_labels_json|json_script:"status-labels-data" }}
+    {{ status_data_json|json_script:"status-data-data" }}
+    {{ voluntario_status_labels_json|json_script:"voluntario-status-labels-data" }}
+    {{ voluntario_status_data_json|json_script:"voluntario-status-data-data" }}
+    {{ genero_labels_json|json_script:"genero-labels-data" }}
+    {{ genero_data_json|json_script:"genero-data-data" }}
+    {{ escolaridade_labels_json|json_script:"escolaridade-labels-data" }}
+    {{ escolaridade_data_json|json_script:"escolaridade-data-data" }}
+    {{ disp_labels_json|json_script:"disp-labels-data" }}
+    {{ disp_datasets_json|json_script:"disp-datasets-data" }}
 
     {# Cards com estatísticas rápidas #}
     <div class="row mb-4">
@@ -42,38 +55,56 @@
         </div>
     </div>
 
-    {# Linha para os gráficos #}
+    <hr>
+    <h2 class="mt-4 mb-3">Voluntários e Tarefas</h2>
+
     <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">Tarefas por Status</div>
-                <div class="card-body">
-                    <canvas id="graficoTarefasStatus"></canvas>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">Status dos Voluntários</div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <canvas id="graficoVoluntariosStatus"></canvas>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">Status dos Voluntários</div>
-                <div class="card-body">
-                    <canvas id="graficoVoluntariosStatus"></canvas>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">Tarefas por Status</div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <canvas id="graficoTarefasStatus"></canvas>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6 mb-4">
+        <div class="col-lg-8 col-md-12 mb-4">
             <div class="card">
-                <div class="card-header">Beneficiários por Gênero</div>
+                <div class="card-header">Disponibilidade de Voluntários por Dia/Turno</div>
                 <div class="card-body">
+                    <div style="overflow-x: auto; min-width: 700px;">
+                        <canvas id="graficoDisponibilidadeVoluntarios"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    <h2 class="mt-4 mb-3">Beneficiários</h2>
+
+    <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">Beneficiários por Gênero</div>
+                <div class="card-body d-flex justify-content-center align-items-center">
                     <canvas id="graficoBeneficiariosGenero"></canvas>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="card">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
                 <div class="card-header">Beneficiários por Escolaridade</div>
-                <div class="card-body">
+                <div class="card-body d-flex justify-content-center align-items-center">
                     <canvas id="graficoBeneficiariosEscolaridade"></canvas>
                 </div>
             </div>
@@ -86,147 +117,5 @@
 {% block scripts %}
 {{ block.super }}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Gráfico de Tarefas por Status (Pizza)
-        const ctxTarefasStatus = document.getElementById('graficoTarefasStatus').getContext('2d');
-        new Chart(ctxTarefasStatus, {
-            type: 'pie', // ou 'doughnut'
-            data: {
-                labels: {{ status_labels_json|safe }},
-                datasets: [{
-                    label: 'Tarefas por Status',
-                    data: {{ status_data_json|safe }},
-                    backgroundColor: [
-                        'rgba(255, 159, 64, 0.7)', // Pendente (Laranja)
-                        'rgba(54, 162, 235, 0.7)', // Sendo Feita (Azul)
-                        'rgba(75, 192, 192, 0.7)', // Concluída (Verde)
-                        'rgba(153, 102, 255, 0.7)', // Cancelada (Roxo)
-                        'rgba(255, 99, 132, 0.7)', // Outro status
-                    ],
-                    borderColor: [
-                        'rgba(255, 159, 64, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 99, 132, 1)',
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: false,
-                        text: 'Distribuição de Tarefas por Status'
-                    }
-                }
-            }
-        });
-
-        // Gráfico de Status dos Voluntários (Barra)
-        const ctxVoluntariosStatus = document.getElementById('graficoVoluntariosStatus').getContext('2d');
-        new Chart(ctxVoluntariosStatus, {
-            type: 'bar',
-            data: {
-                labels: {{ voluntario_status_labels_json|safe }},
-                datasets: [{
-                    label: 'Número de Voluntários',
-                    data: {{ voluntario_status_data_json|safe }},
-                    backgroundColor: [
-                        'rgba(75, 192, 192, 0.7)', // Ativos
-                        'rgba(255, 99, 132, 0.7)'  // Inativos
-                    ],
-                    borderColor: [
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(255, 99, 132, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1 // Garante que o eixo Y mostre apenas inteiros
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false,
-                    }
-                }
-            }
-        });
-
-        // Gráfico de Beneficiários por Gênero (Pizza)
-        const ctxBeneficiariosGenero = document.getElementById('graficoBeneficiariosGenero').getContext('2d');
-        new Chart(ctxBeneficiariosGenero, {
-            type: 'pie',
-            data: {
-                labels: {{ genero_labels_json|safe }},
-                datasets: [{
-                    label: 'Beneficiários por Gênero',
-                    data: {{ genero_data_json|safe }},
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.7)',
-                        'rgba(255, 99, 132, 0.7)',
-                        'rgba(255, 206, 86, 0.7)',
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(153, 102, 255, 0.7)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                }
-            }
-        });
-        
-        // Gráfico de Beneficiários por Escolaridade (Barra)
-        const ctxBeneficiariosEscolaridade = document.getElementById('graficoBeneficiariosEscolaridade').getContext('2d');
-        new Chart(ctxBeneficiariosEscolaridade, {
-            type: 'bar',
-            data: {
-                labels: {{ escolaridade_labels_json|safe }},
-                datasets: [{
-                    label: 'Beneficiários por Escolaridade',
-                    data: {{ escolaridade_data_json|safe }},
-                    backgroundColor: 'rgba(153, 102, 255, 0.7)',
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                indexAxis: 'y', // Barras horizontais para melhor leitura de muitos rótulos
-                responsive: true,
-                scales: {
-                    x: { // Note que para barras horizontais, o eixo de contagem é 'x'
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false,
-                    }
-                }
-            }
-        });
-    });
-</script>
+<script src="{% static 'core/js/dashboard_charts.js' %}" defer></script>
 {% endblock scripts %}
