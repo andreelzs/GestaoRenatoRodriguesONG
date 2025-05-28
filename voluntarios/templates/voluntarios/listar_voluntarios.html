@@ -4,9 +4,9 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>{{ titulo_pagina }}</h1>
-        <a href="{% url 'voluntarios:cadastrar_voluntario' %}" class="btn btn-success">
+    <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center mb-3">
+        <h1 class="mb-2 mb-md-0">{{ titulo_pagina }}</h1>
+        <a href="{% url 'voluntarios:cadastrar_voluntario' %}" class="btn btn-success align-self-start align-self-md-auto">
             <i class="fas fa-plus"></i> Adicionar Novo Voluntário
         </a>
     </div>
@@ -35,12 +35,14 @@
                         <td>{{ voluntario.telefone|default:"Não informado" }}</td>
                         <td>{{ voluntario.usuario.email|default:"Não informado" }}</td>
                         <td>
-                            <a href="{% url 'voluntarios:editar_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-primary me-1" title="Editar">
-                                <i class="fas fa-edit"></i> Editar
-                            </a>
-                            <a href="{% url 'voluntarios:excluir_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-danger" title="Inativar">
-                                <i class="fas fa-trash-alt"></i> Inativar
-                            </a>
+                            <div class="d-flex flex-column flex-md-row">
+                                <a href="{% url 'voluntarios:editar_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-primary mb-1 mb-md-0 me-md-1" title="Editar">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a href="{% url 'voluntarios:excluir_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-danger" title="Inativar">
+                                    <i class="fas fa-trash-alt"></i> Inativar
+                                </a>
+                            </div>
                             {# Ícones FontAwesome podem ser adicionados se o FontAwesome estiver incluído no projeto #}
                         </td>
                     </tr>
