@@ -38,7 +38,15 @@
                 <dd class="col-sm-9">{{ voluntario.telefone|default:"Não informado" }}</dd>
 
                 <dt class="col-sm-3">Endereço:</dt>
-                <dd class="col-sm-9">{{ voluntario.endereco|default:"Não informado"|linebreaksbr }}</dd>
+                <dd class="col-sm-9">
+                    {% if voluntario.logradouro %}
+                        {{ voluntario.logradouro }}{% if voluntario.numero_endereco %}, {{ voluntario.numero_endereco }}{% endif %}{% if voluntario.complemento_endereco %} - {{ voluntario.complemento_endereco }}{% endif %}<br>
+                        {% if voluntario.bairro %}{{ voluntario.bairro }} - {% endif %}{{ voluntario.cidade|default:"" }}/{{ voluntario.estado|default:"" }}<br>
+                        {% if voluntario.cep %}CEP: {{ voluntario.cep }}{% endif %}
+                    {% else %}
+                        Não informado
+                    {% endif %}
+                </dd>
             </dl>
             <hr>
             <h4 class="card-title">Informações da Conta de Usuário</h4>
@@ -58,8 +66,18 @@
                 <dt class="col-sm-3">Áreas de Interesse:</dt>
                 <dd class="col-sm-9">{{ voluntario.areas_interesse|default:"Não informado"|linebreaksbr }}</dd>
 
-                <dt class="col-sm-3">Disponibilidade:</dt>
-                <dd class="col-sm-9">{{ voluntario.disponibilidade|default:"Não informado"|linebreaksbr }}</dd>
+                <dt class="col-sm-3">Disponibilidade Semanal:</dt>
+                <dd class="col-sm-9">
+                    {% with disponibilidades=voluntario.get_disponibilidade_formatada %}
+                        {% if disponibilidades %}
+                            {% for item in disponibilidades %}
+                                <div><strong>{{ item.dia }}:</strong> {{ item.turnos }}</div>
+                            {% endfor %}
+                        {% else %}
+                            Não informado
+                        {% endif %}
+                    {% endwith %}
+                </dd>
                 
                 <dt class="col-sm-3">Data de Cadastro no Sistema:</dt>
                 <dd class="col-sm-9">{{ voluntario.data_cadastro|date:"d/m/Y H:i" }}</dd>
