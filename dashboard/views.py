@@ -33,6 +33,28 @@ def painel_principal(request):
     escolaridade_labels = [dict(Beneficiario.ESCOLARIDADE_CHOICES).get(item['escolaridade'], item['escolaridade']) for item in beneficiarios_por_escolaridade]
     escolaridade_data = [item['total'] for item in beneficiarios_por_escolaridade]
 
+    # 5. Contagem de voluntários por disponibilidade (dia/turno)
+    dias_semana_map = {
+        "Segunda": "seg", "Terça": "ter", "Quarta": "qua", 
+        "Quinta": "qui", "Sexta": "sex", "Sábado": "sab", "Domingo": "dom"
+    }
+    turnos_map = {"Manhã": "m", "Tarde": "t", "Noite": "n"}
+    
+    disp_labels = list(dias_semana_map.keys())
+    disp_datasets = []
+
+    for nome_turno, abrev_turno in turnos_map.items():
+        turno_data = []
+        for nome_dia, abrev_dia in dias_semana_map.items():
+            campo_filtro = f"disp_{abrev_dia}_{abrev_turno}"
+            count = Voluntario.objects.filter(ativo=True, **{campo_filtro: True}).count()
+            turno_data.append(count)
+        disp_datasets.append({
+            "label": nome_turno,
+            "data": turno_data,
+            # Você pode adicionar cores específicas por turno aqui, ex:
+            # "backgroundColor": "rgba(54, 162, 235, 0.5)" para Manhã, etc.
+        })
 
     contexto = {
         'titulo_pagina': 'Dashboard Principal',
@@ -49,5 +71,8 @@ def painel_principal(request):
         'genero_data_json': json.dumps(genero_data),
         'escolaridade_labels_json': json.dumps(escolaridade_labels),
         'escolaridade_data_json': json.dumps(escolaridade_data),
+
+        'disp_labels_json': json.dumps(disp_labels),
+        'disp_datasets_json': json.dumps(disp_datasets),
     }
     return render(request, 'dashboard/painel_principal.html', contexto)
