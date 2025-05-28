@@ -77,11 +77,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-8 col-md-12 mb-4"> {/* Gráfico de disponibilidade reduzido */}
+        <div class="col-lg-8 col-md-12 mb-4">
             <div class="card">
                 <div class="card-header">Disponibilidade de Voluntários por Dia/Turno</div>
                 <div class="card-body">
-                    <canvas id="graficoDisponibilidadeVoluntarios"></canvas>
+                    <div style="overflow-x: auto; min-width: 700px;">
+                        <canvas id="graficoDisponibilidadeVoluntarios"></canvas>
+                    </div>
                 </div>
             </div>
         </div>

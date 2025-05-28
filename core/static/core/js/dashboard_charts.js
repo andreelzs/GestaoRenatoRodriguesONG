@@ -178,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false, // Adicionado para melhor ajuste em telas pequenas
                     scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } },
                     plugins: { legend: { position: 'top' }, title: { display: true, text: 'Contagem de Voluntários Disponíveis por Dia e Turno' } }
                 }
