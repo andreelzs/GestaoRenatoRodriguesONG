@@ -33,22 +33,26 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', DEV_SECRET_KEY)
 DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() != 'false'
 
 # Base ALLOWED_HOSTS for production and development
-ALLOWED_HOSTS = [
-    'andreelzs.pythonanywhere.com', 
-    'www.andreelzs.pythonanywhere.com',
-    'ongrenatorodrigues1.pythonanywhere.com',
-    'www.ongrenatorodrigues1.pythonanywhere.com',
-]
+# ATENÇÃO: A LINHA ABAIXO É APENAS PARA DIAGNÓSTICO E É INSEGURA PARA PRODUÇÃO!
+ALLOWED_HOSTS = ['*'] # Permite qualquer host para teste
 
-if DEBUG:
-    ALLOWED_HOSTS.extend([
-        'localhost', 
-        '127.0.0.1'
-    ])
-else:
-    # Ensure SECRET_KEY is set in production
-    if SECRET_KEY == DEV_SECRET_KEY:
-        raise ValueError("DJANGO_SECRET_KEY must be set in production (when DEBUG is False)")
+# A lógica original de ALLOWED_HOSTS está comentada abaixo para fácil restauração:
+# ALLOWED_HOSTS = [
+#     'andreelzs.pythonanywhere.com', 
+#     'www.andreelzs.pythonanywhere.com',
+#     'ongrenatorodrigues1.pythonanywhere.com',
+#     'www.ongrenatorodrigues1.pythonanywhere.com',
+# ]
+
+# if DEBUG:
+#     ALLOWED_HOSTS.extend([
+#         'localhost', 
+#         '127.0.0.1'
+#     ])
+# else:
+#     # Ensure SECRET_KEY is set in production
+#     if SECRET_KEY == DEV_SECRET_KEY:
+#         raise ValueError("DJANGO_SECRET_KEY must be set in production (when DEBUG is False)")
 
 CSRF_TRUSTED_ORIGINS = [
     'https://andreelzs.pythonanywhere.com', 'https://www.andreelzs.pythonanywhere.com', # Manter os antigos
