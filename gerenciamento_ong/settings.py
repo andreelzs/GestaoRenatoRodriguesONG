@@ -33,14 +33,24 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', DEV_SECRET_KEY)
 DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() != 'false'
 
 if DEBUG:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'andreelzs.pythonanywhere.com', 'www.andreelzs.pythonanywhere.com']
+    ALLOWED_HOSTS = [
+        'localhost', '127.0.0.1', 
+        'andreelzs.pythonanywhere.com', 'www.andreelzs.pythonanywhere.com', # Manter os antigos se ainda forem usados
+        'ongrenatorodrigues1.pythonanywhere.com', 'www.ongrenatorodrigues1.pythonanywhere.com'
+    ]
 else:
-    ALLOWED_HOSTS = ['andreelzs.pythonanywhere.com', 'www.andreelzs.pythonanywhere.com']
+    ALLOWED_HOSTS = [
+        'andreelzs.pythonanywhere.com', 'www.andreelzs.pythonanywhere.com', # Manter os antigos se ainda forem usados
+        'ongrenatorodrigues1.pythonanywhere.com', 'www.ongrenatorodrigues1.pythonanywhere.com'
+    ]
     # Ensure SECRET_KEY is set in production
     if SECRET_KEY == DEV_SECRET_KEY:
         raise ValueError("DJANGO_SECRET_KEY must be set in production (when DEBUG is False)")
 
-CSRF_TRUSTED_ORIGINS = ['https://andreelzs.pythonanywhere.com', 'https://www.andreelzs.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS = [
+    'https://andreelzs.pythonanywhere.com', 'https://www.andreelzs.pythonanywhere.com', # Manter os antigos
+    'https://ongrenatorodrigues1.pythonanywhere.com', 'https://www.ongrenatorodrigues1.pythonanywhere.com'
+]
 
 
 # Application definition
