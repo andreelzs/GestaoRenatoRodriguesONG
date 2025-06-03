@@ -7,7 +7,7 @@ class TarefaAdmin(admin.ModelAdmin):
     search_fields = ('titulo', 'descricao', 'voluntario_responsavel__nome_completo')
     list_filter = ('status', 'prioridade', 'data_prevista_conclusao', 'data_criacao', 'voluntario_responsavel')
     readonly_fields = ('data_criacao', 'data_conclusao_efetiva')
-    date_hierarchy = 'data_criacao' # Adiciona navegação por data
+    date_hierarchy = 'data_criacao'
 
     fieldsets = (
         (None, {
@@ -22,5 +22,5 @@ class TarefaAdmin(admin.ModelAdmin):
         }),
     )
 
-    # Para facilitar a seleção de voluntário e usuário, podemos usar raw_id_fields
+    # Para facilitar a seleção de voluntário e usuário, feito o uso de raw_id_fields
     raw_id_fields = ('voluntario_responsavel', 'atribuido_por')

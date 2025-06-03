@@ -14,14 +14,14 @@ def painel_principal(request):
     status_labels = [dict(Tarefa.STATUS_TAREFA).get(item['status'], item['status']) for item in tarefas_por_status]
     status_data = [item['total'] for item in tarefas_por_status]
 
-    # 2. Contagem de voluntários (ativos vs inativos - exemplo)
+    # 2. Contagem de voluntários 
     #    Ou poderia ser por área de interesse, etc.
     voluntarios_ativos = Voluntario.objects.filter(ativo=True).count()
     voluntarios_inativos = Voluntario.objects.filter(ativo=False).count()
     voluntario_status_labels = ['Ativos', 'Inativos']
     voluntario_status_data = [voluntarios_ativos, voluntarios_inativos]
 
-    # 3. Contagem de beneficiários por faixa etária (exemplo simplificado)
+    # 3. Contagem de beneficiários por faixa etária 
     #    Para um gráfico real de faixa etária, seria necessário calcular as idades
     #    e agrupá-las em faixas. Aqui, vamos usar gênero como exemplo mais simples.
     beneficiarios_por_genero = Beneficiario.objects.values('genero').annotate(total=Count('genero')).order_by('genero')
@@ -52,8 +52,6 @@ def painel_principal(request):
         disp_datasets.append({
             "label": nome_turno,
             "data": turno_data,
-            # Você pode adicionar cores específicas por turno aqui, ex:
-            # "backgroundColor": "rgba(54, 162, 235, 0.5)" para Manhã, etc.
         })
 
     contexto = {

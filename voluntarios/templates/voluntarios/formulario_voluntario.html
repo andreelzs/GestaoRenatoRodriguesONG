@@ -28,10 +28,17 @@
 
         <div class="row">
             <div class="col-md-6 mb-3">
+                {{ form.rg.label_tag }}
+                {{ form.rg }}
+                {% if form.rg.errors %}<div class="invalid-feedback d-block">{{ form.rg.errors|join:", " }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
                 {{ form.data_nascimento.label_tag }}
                 {{ form.data_nascimento }}
                 {% if form.data_nascimento.errors %}<div class="invalid-feedback d-block">{{ form.data_nascimento.errors|join:", " }}</div>{% endif %}
             </div>
+        </div>
+        <div class="row">
             <div class="col-md-6 mb-3">
                 {{ form.telefone.label_tag }}
                 {{ form.telefone }}

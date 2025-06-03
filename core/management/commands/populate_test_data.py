@@ -11,7 +11,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Starting to populate test data...'))
 
-        # --- Create Users and Volunteers ---
         users_volunteers_data = [
             {'username': 'voluntario_ana', 'password': 'password123', 'email': 'ana.silva@example.com', 
              'first_name': 'Ana', 'last_name': 'Silva', 'cpf': '111.111.111-11', 
@@ -68,9 +67,8 @@ class Command(BaseCommand):
         
         admin_user = Usuario.objects.filter(tipo_usuario='ADMIN').first()
         if not admin_user and created_users:
-            admin_user = created_users[0] # Fallback to first created user if no admin
+            admin_user = created_users[0]
 
-        # --- Create Tasks ---
         tarefas_data = [
             {'titulo': 'Organizar doações de alimentos', 'descricao': 'Separar e catalogar alimentos doados esta semana.', 
              'status': 'PEND', 'prioridade': 3, 'data_prevista_conclusao': timezone.now().date() + datetime.timedelta(days=7),

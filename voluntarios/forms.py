@@ -1,6 +1,6 @@
 from django import forms
 from .models import Voluntario
-from contas.models import Usuario # Precisamos acessar o modelo Usuario
+from contas.models import Usuario # Precisamos acessar o modelo Usuario para criar o formulário
 
 class FormularioVoluntario(forms.ModelForm):
     # Campos do modelo Usuario que queremos no formulário de Voluntario
@@ -15,11 +15,11 @@ class FormularioVoluntario(forms.ModelForm):
         model = Voluntario
         # Incluir campos do modelo Voluntario
         fields = [
-            'nome_completo', 'cpf', 'data_nascimento', 
+            'nome_completo', 'cpf', 'rg', 'data_nascimento', 
             'telefone', 
             'cep', 'logradouro', 'numero_endereco', 'complemento_endereco', 'bairro', 'cidade', 'estado',
             'areas_interesse',
-            # Campos de disponibilidade semanal
+
             'disp_seg_m', 'disp_seg_t', 'disp_seg_n',
             'disp_ter_m', 'disp_ter_t', 'disp_ter_n',
             'disp_qua_m', 'disp_qua_t', 'disp_qua_n',
@@ -28,12 +28,9 @@ class FormularioVoluntario(forms.ModelForm):
             'disp_sab_m', 'disp_sab_t', 'disp_sab_n',
             'disp_dom_m', 'disp_dom_t', 'disp_dom_n',
         ]
-        # Adicionar widgets se necessário para melhor formatação (ex: DatePicker)
         widgets = {
             'data_nascimento': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'areas_interesse': forms.Textarea(attrs={'rows': 3}),
-            # 'disponibilidade': forms.Textarea(attrs={'rows': 3}), # Removido
-            # 'endereco': forms.Textarea(attrs={'rows': 3}), # Removido
         }
 
     def __init__(self, *args, **kwargs):
@@ -56,8 +53,56 @@ class FormularioVoluntario(forms.ModelForm):
             elif isinstance(field.widget, forms.CheckboxInput):
                 current_class = field.widget.attrs.get('class', '')
                 field.widget.attrs['class'] = f'{current_class} form-check-input'.strip()
+        
+        # Adicionar placeholder para RG
+        if 'rg' in self.fields:
+            self.fields['rg'].widget.attrs.update({
+                'placeholder': 'Ex: 12.345.678-9',
+                'maxlength': '12' # Para acomodar a máscara XX.XXX.XXX-Y
+            })
+        if 'cpf' in self.fields:
+            self.fields['cpf'].widget.attrs.update({
+                'placeholder': 'Ex: 123.456.789-00',
+                'maxlength': '14' # Para acomodar a máscara XXX.XXX.XXX-XX
+            })
+        if 'telefone' in self.fields:
+            self.fields['telefone'].widget.attrs.update({
+                'placeholder': 'Ex: (21) 99999-9999',
+                'maxlength': '15' # Para acomodar a máscara (XX) XXXXX-XXXX
+            })
+
+    def clean_rg(self):
+        rg = self.cleaned_data.get('rg')
+        if not rg:
+            return rg
+
+        rg_numeros = ""
+        if len(rg) > 0:
+            if rg[-1].upper() == 'X':
+                rg_numeros = ''.join(filter(str.isdigit, rg[:-1])) + 'X'
+            else:
+                rg_numeros = ''.join(filter(str.isdigit, rg))
+        
+        if not (6 <= len(rg_numeros) <= 10):
+            raise forms.ValidationError(
+                "O RG deve conter de 6 a 10 caracteres (números e, opcionalmente, 'X' no final)."
+            )
+
+        # Verifica se todos os caracteres são dígitos, exceto o último que pode ser X
+        if len(rg_numeros) > 0:
+            # Se o último caractere for X, verifica se todos os anteriores são dígitos
+            if rg_numeros[-1].upper() == 'X':
+                if not rg_numeros[:-1].isdigit():
+                    raise forms.ValidationError("RG inválido. Se o dígito verificador for 'X', os caracteres anteriores devem ser números.")
+            # Se o último caractere não for X, verifica se todos são dígitos
+            elif not rg_numeros.isdigit():
+                raise forms.ValidationError("RG deve conter apenas números, ou terminar com 'X'.")
+            
+        elif not rg_numeros: 
+             raise forms.ValidationError("Este campo é obrigatório.")
 
 
+        return rg_numeros.upper()
     def clean_username(self):
         username = self.cleaned_data.get('username')
         # Se estiver editando e o username não mudou, permite.
@@ -95,33 +140,46 @@ class FormularioVoluntario(forms.ModelForm):
         return confirmar_password
 
     def save(self, commit=True):
-        # Primeiro, salva o usuário ou o atualiza
-        # Se é uma nova instância de Voluntario (sem pk) ou se não tem usuário associado
-        is_new_voluntario = not (self.instance and self.instance.pk and hasattr(self.instance, 'usuario'))
+        print(f"DEBUG: FormularioVoluntario.save() chamado. commit={commit}")
+        print(f"DEBUG: cleaned_data: {self.cleaned_data}")
+
+        is_new_voluntario = not (self.instance and self.instance.pk and hasattr(self.instance, 'usuario') and self.instance.usuario)
+        
+        print(f"DEBUG: is_new_voluntario: {is_new_voluntario}")
 
         if is_new_voluntario:
-            # Cria um novo usuário
-            user = Usuario.objects.create_user(
-                username=self.cleaned_data['username'],
-                email=self.cleaned_data.get('email'), # .get() para campos opcionais
-                password=self.cleaned_data['password']
-            )
-            # Define o tipo de usuário como Colaborador por padrão para voluntários
-            user.tipo_usuario = 'COLAB' 
-            if commit:
-                user.save()
-            self.instance.usuario = user
+            print("DEBUG: Criando novo usuário...")
+            try:
+                user = Usuario.objects.create_user(
+                    username=self.cleaned_data['username'],
+                    email=self.cleaned_data.get('email'),
+                    password=self.cleaned_data['password']
+                )
+                user.tipo_usuario = 'COLAB'
+                print(f"DEBUG: Novo usuário criado (antes do save): id={user.id}, username={user.username}, is_active={user.is_active}")
+                if commit:
+                    user.save()
+                    print(f"DEBUG: Novo usuário salvo. Senha hasheada: {user.password}")
+                self.instance.usuario = user
+            except Exception as e:
+                print(f"DEBUG: Erro ao criar usuário: {e}")
+                raise # Re-levanta a exceção para não mascarar o erro
         else:
-            # Atualiza o usuário existente
+            print(f"DEBUG: Atualizando usuário existente: {self.instance.usuario.username}")
             user = self.instance.usuario
             user.username = self.cleaned_data['username']
             user.email = self.cleaned_data.get('email')
-            # Atualiza a senha apenas se uma nova foi fornecida
-            if self.cleaned_data.get("password"):
-                user.set_password(self.cleaned_data["password"])
+            
+            nova_senha = self.cleaned_data.get("password")
+            if nova_senha:
+                user.set_password(nova_senha)
+                print(f"DEBUG: Senha do usuário atualizada.")
+            
             if commit:
                 user.save()
+                print(f"DEBUG: Usuário existente salvo. Senha hasheada: {user.password}")
         
-        # Agora salva a instância de Voluntario
+        print("DEBUG: Salvando instância de Voluntario...")
         voluntario = super().save(commit=commit)
+        print(f"DEBUG: Voluntario salvo: {voluntario}, Usuário associado: {voluntario.usuario}")
         return voluntario

@@ -8,7 +8,7 @@ from voluntarios.models import Voluntario # Para filtros ou informações adicio
 
 @login_required
 def listar_tarefas(request):
-    # Adicionar filtros (ex: por status, por voluntário, etc.)
+    # Adicionar filtros
     filtro_status = request.GET.get('status')
     filtro_voluntario_id = request.GET.get('voluntario')
 
@@ -101,12 +101,6 @@ def excluir_tarefa(request, tarefa_id): # Ou cancelar/arquivar
     tarefa = get_object_or_404(Tarefa, pk=tarefa_id)
     if request.method == 'POST':
         try:
-            # Em vez de excluir, podemos mudar o status para 'Cancelada' ou implementar arquivamento
-            # Por simplicidade, vamos excluir por enquanto, mas idealmente seria um status.
-            # tarefa.status = 'CANC' 
-            # tarefa.save()
-            # messages.success(request, f'Tarefa "{tarefa.titulo}" cancelada.')
-            # OU
             tarefa.delete()
             messages.success(request, f'Tarefa "{tarefa.titulo}" excluída com sucesso.')
         except Exception as e:
@@ -119,7 +113,7 @@ def excluir_tarefa(request, tarefa_id): # Ou cancelar/arquivar
     }
     return render(request, 'tarefas/confirmar_exclusao_tarefa.html', contexto)
 
-# View para atualizar status rapidamente (ex: de um botão na lista)
+# View para atualizar status rapidamente 
 @login_required
 def atualizar_status_tarefa(request, tarefa_id, novo_status):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_id)
@@ -127,7 +121,7 @@ def atualizar_status_tarefa(request, tarefa_id, novo_status):
         tarefa.status = novo_status
         if novo_status == 'CONC' and not tarefa.data_conclusao_efetiva:
             tarefa.data_conclusao_efetiva = timezone.now().date()
-        elif tarefa.status == 'CONC' and novo_status != 'CONC': # Reabrindo uma tarefa concluída
+        elif tarefa.status == 'CONC' and novo_status != 'CONC': 
             tarefa.data_conclusao_efetiva = None
         tarefa.save()
         messages.success(request, f'Status da tarefa "{tarefa.titulo}" atualizado para "{tarefa.get_status_display()}".')

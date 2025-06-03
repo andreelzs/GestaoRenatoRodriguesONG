@@ -1,17 +1,8 @@
 from django import forms
 from .models import Tarefa
-from voluntarios.models import Voluntario # Para o campo de seleção de voluntário
-
+from voluntarios.models import Voluntario 
 class FormularioTarefa(forms.ModelForm):
-    # Se quisermos que o campo voluntario_responsavel seja mais amigável (ex: mostrando nome)
-    # podemos sobrescrevê-lo. O ModelChoiceField já faz isso por padrão usando o __str__ do modelo.
-    # voluntario_responsavel = forms.ModelChoiceField(
-    #     queryset=Voluntario.objects.filter(ativo=True),
-    #     required=False, # Tarefa pode não ter um responsável inicialmente
-    #     label="Voluntário Responsável"
-    # )
-    # O campo atribuido_por será preenchido automaticamente na view com o usuário logado.
-
+    
     class Meta:
         model = Tarefa
         fields = [

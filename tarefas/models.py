@@ -1,18 +1,13 @@
 from django.db import models
 from django.conf import settings
-# Importar o modelo Voluntario do app voluntarios
-# É uma boa prática referenciar modelos de outros apps através de string 'app_label.ModelName'
-# para evitar importações circulares, mas como Voluntario já deve estar definido,
-# podemos importar diretamente se não houver problemas de ordem de carregamento.
-# No entanto, para garantir, usaremos a string.
-# from voluntarios.models import Voluntario -> Alternativa se não houver circularidade
+
 
 class Tarefa(models.Model):
     STATUS_TAREFA = [
         ('PEND', 'Pendente'),
         ('FAZE', 'Sendo feita'),
         ('CONC', 'Concluída'),
-        ('CANC', 'Cancelada'), # Adicionando um status de cancelada
+        ('CANC', 'Cancelada'), 
     ]
 
     PRIORIDADE_TAREFA = [
@@ -32,7 +27,7 @@ class Tarefa(models.Model):
     )
     prioridade = models.IntegerField(
         choices=PRIORIDADE_TAREFA,
-        default=2, # Média
+        default=2, 
         verbose_name='Prioridade'
     )
     data_criacao = models.DateTimeField(auto_now_add=True, verbose_name='Data de Criação')

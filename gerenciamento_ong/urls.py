@@ -19,7 +19,7 @@ from django.urls import path, include # Adicionar include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')), # Rota raiz para o app core (página inicial)
+    path('', include('core.urls')), 
     path('contas/', include('contas.urls')),
     path('voluntarios/', include('voluntarios.urls')),
     path('beneficiarios/', include('beneficiarios.urls')),

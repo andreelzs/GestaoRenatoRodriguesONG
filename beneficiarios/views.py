@@ -65,7 +65,7 @@ def editar_beneficiario(request, beneficiario_id):
     return render(request, 'beneficiarios/formulario_beneficiario.html', contexto)
 
 @login_required
-def excluir_beneficiario(request, beneficiario_id): # Na verdade, inativação
+def excluir_beneficiario(request, beneficiario_id):
     beneficiario = get_object_or_404(Beneficiario, pk=beneficiario_id)
     if request.method == 'POST':
         try:

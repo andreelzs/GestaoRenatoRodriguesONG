@@ -10,6 +10,7 @@ class Voluntario(models.Model):
     )
     nome_completo = models.CharField(max_length=255, verbose_name='Nome Completo')
     cpf = models.CharField(max_length=14, unique=True, verbose_name='CPF', help_text='Formato: XXX.XXX.XXX-XX')
+    rg = models.CharField(max_length=10, verbose_name='RG') # Tornando obrigatório
     data_nascimento = models.DateField(verbose_name='Data de Nascimento')
     telefone = models.CharField(max_length=20, blank=True, null=True, verbose_name='Telefone Celular', help_text='Formato: (XX) XXXXX-XXXX')
     
@@ -57,6 +58,20 @@ class Voluntario(models.Model):
 
     def __str__(self):
         return self.nome_completo
+
+    def get_rg_formatado(self):
+        if self.rg:
+            # Formato RJ: XX.XXX.XXX-X (total 9 caracteres com DV)
+            # Se o RG armazenado tiver 9 caracteres (8 números + DV)
+            if len(self.rg) == 9:
+                return f"{self.rg[0:2]}.{self.rg[2:5]}.{self.rg[5:8]}-{self.rg[8]}"
+            # Formato antigo RJ (sem DV explícito na máscara, mas parte dos 8 digitos)
+            # ou outros formatos com 8 dígitos totais
+            elif len(self.rg) == 8:
+                 return f"{self.rg[0:2]}.{self.rg[2:5]}.{self.rg[5:8]}"
+            # Adicionar mais lógicas se necessário ou apenas retornar o RG puro
+            return self.rg 
+        return ""
 
     def get_disponibilidade_formatada(self):
         dias_semana = [

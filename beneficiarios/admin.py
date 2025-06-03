@@ -6,7 +6,7 @@ class BeneficiarioAdmin(admin.ModelAdmin):
     list_display = ('nome_completo', 'data_nascimento', 'idade', 'genero', 'cidade', 'ativo', 'data_cadastro')
     search_fields = ('nome_completo', 'cpf', 'cidade', 'bairro')
     list_filter = ('ativo', 'genero', 'escolaridade', 'cidade', 'data_cadastro')
-    readonly_fields = ('data_cadastro', 'idade') # 'idade' é uma property, então deve ser readonly
+    readonly_fields = ('data_cadastro', 'idade') 
 
     fieldsets = (
         ('Informações Pessoais', {
@@ -14,7 +14,7 @@ class BeneficiarioAdmin(admin.ModelAdmin):
         }),
         ('Endereço', {
             'fields': ('cep', 'logradouro', 'numero_endereco', 'complemento_endereco', 'bairro', 'cidade', 'estado'),
-            'classes': ('collapse',) # Opcional, para agrupar e poder esconder
+            'classes': ('collapse',) 
         }),
         ('Contato', {
             'fields': ('telefone_principal', 'telefone_secundario', 'email'),

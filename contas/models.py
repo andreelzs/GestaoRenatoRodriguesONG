@@ -13,8 +13,6 @@ class Usuario(AbstractUser):
         verbose_name='Tipo de Usuário'
     )
 
-    # Adicione related_name para evitar conflitos com o User padrão do Django
-    # ao usar o admin ou em outras relações.
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='grupos',
