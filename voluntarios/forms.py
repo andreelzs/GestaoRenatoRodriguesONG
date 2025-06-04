@@ -10,6 +10,12 @@ class FormularioVoluntario(forms.ModelForm):
     email = forms.EmailField(label='Email (para login e contato)', required=False)
     password = forms.CharField(label='Senha (para login)', widget=forms.PasswordInput, min_length=8)
     confirmar_password = forms.CharField(label='Confirmar Senha', widget=forms.PasswordInput, min_length=8)
+    tipo_conta_usuario = forms.ChoiceField(
+        label='Tipo de Conta do Usuário',
+        choices=Usuario.TIPOS_USUARIO,
+        widget=forms.RadioSelect,
+        initial='COLAB' # Padrão para Colaborador
+    )
 
     class Meta:
         model = Voluntario
@@ -39,20 +45,26 @@ class FormularioVoluntario(forms.ModelForm):
         if self.instance and self.instance.pk and hasattr(self.instance, 'usuario'):
             self.fields['username'].initial = self.instance.usuario.username
             self.fields['email'].initial = self.instance.usuario.email
+            self.fields['tipo_conta_usuario'].initial = self.instance.usuario.tipo_usuario
             # Não preenchemos a senha por segurança e usabilidade
             self.fields['password'].required = False
             self.fields['confirmar_password'].required = False
         
         # Adicionar classes do Bootstrap aos campos
         for field_name, field in self.fields.items():
-            # Não aplicar 'form-control' a checkboxes, pois pode quebrar a renderização padrão
-            if not isinstance(field.widget, forms.CheckboxInput):
-                current_class = field.widget.attrs.get('class', '')
-                field.widget.attrs['class'] = f'{current_class} form-control'.strip()
-            # Para checkboxes, podemos querer usar 'form-check-input' do Bootstrap 5
+            if isinstance(field.widget, forms.RadioSelect):
+                # RadioSelect é renderizado de forma especial no template, não aplicar form-control ao widget principal.
+                # Os inputs individuais dentro dele podem precisar de form-check-input,
+                # mas isso é melhor tratado no loop de renderização do template.
+                pass
             elif isinstance(field.widget, forms.CheckboxInput):
+                # Para checkboxes individuais (não parte de um CheckboxSelectMultiple)
                 current_class = field.widget.attrs.get('class', '')
                 field.widget.attrs['class'] = f'{current_class} form-check-input'.strip()
+            elif not isinstance(field.widget, forms.CheckboxSelectMultiple):
+                # Aplicar form-control a outros campos, exceto CheckboxSelectMultiple
+                current_class = field.widget.attrs.get('class', '')
+                field.widget.attrs['class'] = f'{current_class} form-control'.strip()
         
         # Adicionar placeholder para RG
         if 'rg' in self.fields:
@@ -122,7 +134,7 @@ class FormularioVoluntario(forms.ModelForm):
         # Se estiver editando e o email não mudou, permite.
         if self.instance and self.instance.pk and hasattr(self.instance, 'usuario') and self.instance.usuario.email == email:
             return email
-        # Caso contrário, verifica se o email já existe (se houver um email).
+        # Caso contrário, verifica se o email já existe.
         if email and Usuario.objects.filter(email=email).exists():
             raise forms.ValidationError("Este email já está cadastrado. Por favor, use outro ou deixe em branco se opcional.")
         return email
@@ -155,8 +167,8 @@ class FormularioVoluntario(forms.ModelForm):
                     email=self.cleaned_data.get('email'),
                     password=self.cleaned_data['password']
                 )
-                user.tipo_usuario = 'COLAB'
-                print(f"DEBUG: Novo usuário criado (antes do save): id={user.id}, username={user.username}, is_active={user.is_active}")
+                user.tipo_usuario = self.cleaned_data['tipo_conta_usuario'] # Definido pelo formulário
+                print(f"DEBUG: Novo usuário criado (antes do save): id={user.id}, username={user.username}, tipo={user.tipo_usuario}, is_active={user.is_active}")
                 if commit:
                     user.save()
                     print(f"DEBUG: Novo usuário salvo. Senha hasheada: {user.password}")
@@ -169,6 +181,7 @@ class FormularioVoluntario(forms.ModelForm):
             user = self.instance.usuario
             user.username = self.cleaned_data['username']
             user.email = self.cleaned_data.get('email')
+            user.tipo_usuario = self.cleaned_data['tipo_conta_usuario'] # Atualiza o tipo de usuário
             
             nova_senha = self.cleaned_data.get("password")
             if nova_senha:
@@ -177,7 +190,7 @@ class FormularioVoluntario(forms.ModelForm):
             
             if commit:
                 user.save()
-                print(f"DEBUG: Usuário existente salvo. Senha hasheada: {user.password}")
+                print(f"DEBUG: Usuário existente salvo. Tipo: {user.tipo_usuario}, Senha hasheada: {user.password}")
         
         print("DEBUG: Salvando instância de Voluntario...")
         voluntario = super().save(commit=commit)

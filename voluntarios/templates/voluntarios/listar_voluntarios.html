@@ -11,6 +11,15 @@
         </a>
     </div>
 
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link {% if filtro_ativo_atual == 'ativos' %}active{% endif %}" href="{% url 'voluntarios:listar_voluntarios' %}?filtro_ativo=ativos">Ativos</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if filtro_ativo_atual == 'inativos' %}active{% endif %}" href="{% url 'voluntarios:listar_voluntarios' %}?filtro_ativo=inativos">Inativos</a>
+        </li>
+    </ul>
+
     {% if voluntarios %}
         <div class="table-responsive">
             <table class="table table-striped table-hover">
@@ -31,19 +40,32 @@
                                 {{ voluntario.nome_completo }}
                             </a>
                         </td>
-                        <td>{{ voluntario.cpf|default:"Não informado" }}</td>
-                        <td>{{ voluntario.telefone|default:"Não informado" }}</td>
+                        <td>{{ voluntario.get_cpf_formatado|default:"Não informado" }}</td>
+                        <td>{{ voluntario.get_telefone_formatado|default:"Não informado" }}</td>
                         <td>{{ voluntario.usuario.email|default:"Não informado" }}</td>
                         <td>
                             <div class="d-flex flex-column flex-md-row">
                                 <a href="{% url 'voluntarios:editar_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-primary mb-1 mb-md-0 me-md-1" title="Editar">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
-                                <a href="{% url 'voluntarios:excluir_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-danger" title="Inativar">
-                                    <i class="fas fa-trash-alt"></i> Inativar
-                                </a>
+                                {% if request.user.tipo_usuario == 'ADMIN' %}
+                                    {% if voluntario.ativo %}
+                                    <a href="{% url 'voluntarios:excluir_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-danger" title="Inativar">
+                                        <i class="fas fa-user-times"></i> Inativar
+                                    </a>
+                                    {% else %}
+                                    <form action="{% url 'voluntarios:reativar_voluntario' voluntario.id %}" method="post" style="display: inline;" class="me-1">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Reativar">
+                                            <i class="fas fa-user-check"></i> Reativar
+                                        </button>
+                                    </form>
+                                    <a href="{% url 'voluntarios:excluir_permanente_voluntario' voluntario.id %}" class="btn btn-sm btn-danger" title="Excluir Permanentemente">
+                                        <i class="fas fa-trash-alt"></i> Excluir Perm.
+                                    </a>
+                                    {% endif %}
+                                {% endif %}
                             </div>
-                            {# Ícones FontAwesome podem ser adicionados se o FontAwesome estiver incluído no projeto #}
                         </td>
                     </tr>
                     {% endfor %}
@@ -52,8 +74,12 @@
         </div>
     {% else %}
         <div class="alert alert-info" role="alert">
-            Nenhum voluntário cadastrado ainda. 
-            <a href="{% url 'voluntarios:cadastrar_voluntario' %}" class="alert-link">Clique aqui para adicionar o primeiro!</a>
+            {% if filtro_ativo_atual == 'inativos' %}
+                Nenhum voluntário inativo encontrado.
+            {% else %}
+                Nenhum voluntário ativo encontrado. 
+                <a href="{% url 'voluntarios:cadastrar_voluntario' %}" class="alert-link">Clique aqui para adicionar o primeiro!</a>
+            {% endif %}
         </div>
     {% endif %}
 </div>

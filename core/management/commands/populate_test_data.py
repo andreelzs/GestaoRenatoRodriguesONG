@@ -4,9 +4,10 @@ from django.utils import timezone
 from contas.models import Usuario
 from voluntarios.models import Voluntario
 from tarefas.models import Tarefa
+from beneficiarios.models import Beneficiario # Adicionado import
 
 class Command(BaseCommand):
-    help = 'Populates the database with sample test data for Voluntarios and Tarefas.'
+    help = 'Populates the database with sample test data for Voluntarios, Tarefas, and Beneficiarios.'
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Starting to populate test data...'))
@@ -100,5 +101,45 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'Tarefa "{tarefa.titulo}" created.'))
             else:
                 self.stdout.write(self.style.WARNING(f'Tarefa "{data_t["titulo"]}" already exists.'))
+
+        # Dados para Beneficiários
+        beneficiarios_data = [
+            {
+                'nome_completo': 'Maria Oliveira', 'data_nascimento': datetime.date(1975, 3, 22), 
+                'genero': 'F', 'cpf': '333.333.333-33', 'rg': '333333333',
+                'cep': '20000-001', 'logradouro': 'Rua das Palmeiras', 'numero_endereco': '10', 'bairro': 'Centro', 'cidade': 'Rio de Janeiro', 'estado': 'RJ',
+                'telefone_principal': '(21) 93333-3333', 'email': 'maria.oliveira@example.com', 'escolaridade': 'MC'
+            },
+            {
+                'nome_completo': 'João Santos', 'data_nascimento': datetime.date(2010, 7, 10),
+                'genero': 'M', 'cpf': '444.444.444-44', 'rg': '444444444',
+                'cep': '01000-002', 'logradouro': 'Avenida Principal', 'numero_endereco': '250', 'bairro': 'Sé', 'cidade': 'São Paulo', 'estado': 'SP',
+                'telefone_principal': '(11) 94444-4444', 'escolaridade': 'FI'
+            },
+            {
+                'nome_completo': 'Ana Clara Souza', 'data_nascimento': datetime.date(1998, 11, 5),
+                'genero': 'F', # CPF e RG podem ser opcionais no modelo, não incluindo aqui para testar
+                'logradouro': 'Travessa das Flores', 'numero_endereco': '7B', 'bairro': 'Jardim', 'cidade': 'Belo Horizonte', 'estado': 'MG',
+                'email': 'ana.clara@example.com', 'escolaridade': 'SC', 'ocupacao': 'Estudante'
+            },
+        ]
+
+        for data_b in beneficiarios_data:
+            # Usar CPF como chave única para get_or_create se disponível, senão nome_completo e data_nascimento
+            unique_key = {}
+            if data_b.get('cpf'):
+                unique_key['cpf'] = data_b['cpf']
+            else:
+                unique_key['nome_completo'] = data_b['nome_completo']
+                unique_key['data_nascimento'] = data_b['data_nascimento']
+
+            beneficiario, b_created = Beneficiario.objects.get_or_create(
+                **unique_key,
+                defaults=data_b
+            )
+            if b_created:
+                self.stdout.write(self.style.SUCCESS(f'Beneficiario "{beneficiario.nome_completo}" created.'))
+            else:
+                self.stdout.write(self.style.WARNING(f'Beneficiario com dados ({unique_key}) already exists.'))
 
         self.stdout.write(self.style.SUCCESS('Successfully populated test data.'))

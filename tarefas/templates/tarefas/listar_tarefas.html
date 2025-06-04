@@ -11,8 +11,12 @@
         </a>
     </div>
 
-    <form method="get" class="row g-3 mb-4 p-3 border rounded bg-light">
-        <div class="col-md-5">
+    <form method="get" class="row g-3 mb-4 p-3 border rounded bg-light align-items-end">
+        <div class="col-md-4">
+            <label for="q_titulo" class="form-label">Pesquisar por Título:</label>
+            <input type="text" name="q_titulo" id="q_titulo" class="form-control" value="{{ request.GET.q_titulo|default:'' }}">
+        </div>
+        <div class="col-md-3">
             <label for="status" class="form-label">Filtrar por Status:</label>
             <select name="status" id="status" class="form-select">
                 <option value="">Todos os Status</option>
@@ -21,7 +25,7 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-3">
             <label for="voluntario" class="form-label">Filtrar por Voluntário:</label>
             <select name="voluntario" id="voluntario" class="form-select">
                 <option value="">Todos os Voluntários</option>
@@ -30,8 +34,8 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Filtrar</button>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search"></i> Pesquisar/Filtrar</button>
         </div>
     </form>
 
@@ -78,9 +82,11 @@
                             <a href="{% url 'tarefas:editar_tarefa' tarefa.id %}" class="btn btn-sm btn-outline-primary me-1" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </a>
+                            {% if request.user.tipo_usuario == 'ADMIN' %}
                             <a href="{% url 'tarefas:excluir_tarefa' tarefa.id %}" class="btn btn-sm btn-outline-danger" title="Excluir">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
+                            {% endif %}
                             {# Botões para mudança rápida de status poderiam ser adicionados aqui #}
                         </td>
                     </tr>

@@ -5,15 +5,19 @@ from django.utils import timezone
 from .models import Tarefa
 from .forms import FormularioTarefa
 from voluntarios.models import Voluntario # Para filtros ou informações adicionais
+from contas.decorators import admin_required # Importar o decorator
 
 @login_required
 def listar_tarefas(request):
     # Adicionar filtros
     filtro_status = request.GET.get('status')
     filtro_voluntario_id = request.GET.get('voluntario')
+    termo_pesquisa_titulo = request.GET.get('q_titulo')
 
     tarefas = Tarefa.objects.all()
 
+    if termo_pesquisa_titulo:
+        tarefas = tarefas.filter(titulo__icontains=termo_pesquisa_titulo)
     if filtro_status:
         tarefas = tarefas.filter(status=filtro_status)
     if filtro_voluntario_id:
@@ -31,6 +35,7 @@ def listar_tarefas(request):
         'voluntarios_ativos': voluntarios_ativos, # Para o filtro
         'filtro_status_atual': filtro_status,
         'filtro_voluntario_atual': int(filtro_voluntario_id) if filtro_voluntario_id else None,
+        'termo_pesquisa_titulo_atual': termo_pesquisa_titulo, # Para preencher o campo de pesquisa
     }
     return render(request, 'tarefas/listar_tarefas.html', contexto)
 
@@ -97,6 +102,7 @@ def editar_tarefa(request, tarefa_id):
     return render(request, 'tarefas/formulario_tarefa.html', contexto)
 
 @login_required
+@admin_required # Apenas admin pode excluir tarefas
 def excluir_tarefa(request, tarefa_id): # Ou cancelar/arquivar
     tarefa = get_object_or_404(Tarefa, pk=tarefa_id)
     if request.method == 'POST':

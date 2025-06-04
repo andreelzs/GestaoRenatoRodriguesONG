@@ -4,9 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const elemento = document.getElementById(elementId);
         if (elemento) {
             elemento.addEventListener('input', function(e) {
-                // Lógica de cursor comentada por enquanto para focar na formatação
-                // const originalValue = e.target.value;
-                // const originalPos = e.target.selectionStart;
                 const valorFormatado = funcaoMascara(e.target.value);
                 e.target.value = valorFormatado;
             });
@@ -83,4 +80,65 @@ document.addEventListener('DOMContentLoaded', function() {
     aplicarMascara('id_telefone', mascaraTelefone); 
     aplicarMascara('id_telefone_principal', mascaraTelefone); 
     aplicarMascara('id_telefone_secundario', mascaraTelefone);
+
+    // Função para formatar um campo específico no carregamento da página
+    function formatarCampoAoCarregar(elementId, funcaoMascara) {
+        const elemento = document.getElementById(elementId);
+        if (elemento && elemento.value) {
+            // Aplica a máscara apenas se o valor não estiver já formatado
+            let precisaFormatar = true;
+            if (elementId === 'id_rg' || elementId === 'id_cpf' || elementId === 'id_cep') {
+                if (elemento.value.includes('.') || elemento.value.includes('-')) {
+                    precisaFormatar = false;
+                }
+            } else if (elementId.includes('telefone')) {
+                if (elemento.value.includes('(') || elemento.value.includes(')') || elemento.value.includes('-')) {
+                    precisaFormatar = false;
+                }
+            }
+            // A heurística acima é falha porque o valor que volta do backend é o limpo.
+            // Então, sempre precisamos tentar formatar. A função de máscara deve ser idempotente
+            // ou lidar bem com valores já parcialmente formatados (o que as atuais não fazem bem).
+            // A melhor abordagem é que o backend envie o valor limpo, e o JS sempre formate.
+            // As funções de máscara atuais já limpam o valor antes de formatar, então está OK.
+            elemento.value = funcaoMascara(elemento.value);
+        }
+    }
+
+    // Reaplicar máscaras aos valores existentes no carregamento da página
+    formatarCampoAoCarregar('id_rg', mascaraRG);
+    formatarCampoAoCarregar('id_cpf', mascaraCPF);
+    formatarCampoAoCarregar('id_cep', mascaraCEP);
+    formatarCampoAoCarregar('id_telefone', mascaraTelefone);
+    formatarCampoAoCarregar('id_telefone_principal', mascaraTelefone);
+    formatarCampoAoCarregar('id_telefone_secundario', mascaraTelefone);
+
+    // Lógica para limpar máscaras antes do submit do formulário
+    const todosOsFormularios = document.querySelectorAll('form');
+    todosOsFormularios.forEach(function(form) {
+        form.addEventListener('submit', function() {
+            const campoRG = form.querySelector('#id_rg');
+            if (campoRG) {
+                campoRG.value = campoRG.value.replace(/[^0-9xX]/gi, '');
+            }
+
+            const campoCPF = form.querySelector('#id_cpf');
+            if (campoCPF) {
+                campoCPF.value = campoCPF.value.replace(/\D/g, '');
+            }
+
+            const campoCEP = form.querySelector('#id_cep');
+            if (campoCEP) {
+                campoCEP.value = campoCEP.value.replace(/\D/g, '');
+            }
+
+            const idsTelefone = ['id_telefone', 'id_telefone_principal', 'id_telefone_secundario'];
+            idsTelefone.forEach(function(idTel) {
+                const campoTel = form.querySelector(`#${idTel}`);
+                if (campoTel) {
+                    campoTel.value = campoTel.value.replace(/\D/g, '');
+                }
+            });
+        });
+    });
 });

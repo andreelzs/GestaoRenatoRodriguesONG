@@ -87,9 +87,11 @@
 
         </div>
         <div class="card-footer text-muted">
+            {% if request.user.tipo_usuario == 'ADMIN' %}
             <a href="{% url 'tarefas:excluir_tarefa' tarefa.id %}" class="btn btn-danger">
                 <i class="fas fa-trash-alt"></i> Excluir Tarefa
             </a>
+            {% endif %}
         </div>
     </div>
 </div>

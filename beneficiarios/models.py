@@ -53,6 +53,7 @@ class Beneficiario(models.Model):
     observacoes = models.TextField(blank=True, null=True, verbose_name='Observações Adicionais')
     data_cadastro = models.DateTimeField(auto_now_add=True, verbose_name='Data de Cadastro')
     ativo = models.BooleanField(default=True, verbose_name='Ativo')
+    data_inativacao = models.DateTimeField(null=True, blank=True, verbose_name='Data de Inativação')
 
     # Campo para calcular idade (não armazenado, mas pode ser um property no modelo)
     @property
@@ -68,3 +69,48 @@ class Beneficiario(models.Model):
 
     def __str__(self):
         return self.nome_completo
+
+    def get_cpf_formatado(self):
+        if self.cpf:
+            cpf_numeros = ''.join(filter(str.isdigit, self.cpf))
+            if len(cpf_numeros) == 11:
+                return f"{cpf_numeros[:3]}.{cpf_numeros[3:6]}.{cpf_numeros[6:9]}-{cpf_numeros[9:]}"
+        return self.cpf or ""
+
+    def get_rg_formatado(self):
+        if self.rg:
+            # Remove não dígitos, exceto X no final
+            rg_val = ''.join(filter(str.isdigit, self.rg[:-1])) + \
+                     (self.rg[-1] if self.rg[-1].upper() == 'X' else ''.join(filter(str.isdigit, self.rg[-1])))
+            rg_val = rg_val.upper()
+            
+            # Formato RJ: XX.XXX.XXX-Y (9 caracteres)
+            if len(rg_val) == 9:
+                return f"{rg_val[0:2]}.{rg_val[2:5]}.{rg_val[5:8]}-{rg_val[8]}"
+            # Outros formatos comuns (ex: 8 dígitos)
+            elif len(rg_val) == 8: # XX.XXX.XXX
+                 return f"{rg_val[0:2]}.{rg_val[2:5]}.{rg_val[5:8]}"
+            # Adicionar mais lógicas se necessário ou apenas retornar o RG puro
+        return self.rg or ""
+
+    def _formatar_telefone(self, telefone_str):
+        if telefone_str:
+            tel_numeros = ''.join(filter(str.isdigit, telefone_str))
+            if len(tel_numeros) == 11: # (XX) XXXXX-XXXX
+                return f"({tel_numeros[:2]}) {tel_numeros[2:7]}-{tel_numeros[7:]}"
+            elif len(tel_numeros) == 10: # (XX) XXXX-XXXX
+                return f"({tel_numeros[:2]}) {tel_numeros[2:6]}-{tel_numeros[6:]}"
+        return telefone_str or ""
+
+    def get_telefone_principal_formatado(self):
+        return self._formatar_telefone(self.telefone_principal)
+
+    def get_telefone_secundario_formatado(self):
+        return self._formatar_telefone(self.telefone_secundario)
+
+    def get_cep_formatado(self):
+        if self.cep:
+            cep_numeros = ''.join(filter(str.isdigit, self.cep))
+            if len(cep_numeros) == 8:
+                return f"{cep_numeros[:5]}-{cep_numeros[5:]}"
+        return self.cep or ""

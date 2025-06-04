@@ -23,7 +23,7 @@
                 <dd class="col-sm-9">{{ voluntario.nome_completo }}</dd>
 
                 <dt class="col-sm-3">CPF:</dt>
-                <dd class="col-sm-9">{{ voluntario.cpf|default:"Não informado" }}</dd>
+                <dd class="col-sm-9">{{ voluntario.get_cpf_formatado|default:"Não informado" }}</dd>
 
                 <dt class="col-sm-3">RG:</dt>
                 <dd class="col-sm-9">{{ voluntario.get_rg_formatado|default:"Não informado" }}</dd>
@@ -33,19 +33,24 @@
                 
                 <dt class="col-sm-3">Status:</dt>
                 <dd class="col-sm-9">{% if voluntario.ativo %}Ativo{% else %}Inativo{% endif %}</dd>
+
+                {% if not voluntario.ativo and voluntario.data_inativacao %}
+                <dt class="col-sm-3">Data de Inativação:</dt>
+                <dd class="col-sm-9">{{ voluntario.data_inativacao|date:"d/m/Y H:i" }}</dd>
+                {% endif %}
             </dl>
             <hr>
             <h4 class="card-title">Informações de Contato</h4>
             <dl class="row">
                 <dt class="col-sm-3">Telefone:</dt>
-                <dd class="col-sm-9">{{ voluntario.telefone|default:"Não informado" }}</dd>
+                <dd class="col-sm-9">{{ voluntario.get_telefone_formatado|default:"Não informado" }}</dd>
 
                 <dt class="col-sm-3">Endereço:</dt>
                 <dd class="col-sm-9">
                     {% if voluntario.logradouro %}
                         {{ voluntario.logradouro }}{% if voluntario.numero_endereco %}, {{ voluntario.numero_endereco }}{% endif %}{% if voluntario.complemento_endereco %} - {{ voluntario.complemento_endereco }}{% endif %}<br>
                         {% if voluntario.bairro %}{{ voluntario.bairro }} - {% endif %}{{ voluntario.cidade|default:"" }}/{{ voluntario.estado|default:"" }}<br>
-                        {% if voluntario.cep %}CEP: {{ voluntario.cep }}{% endif %}
+                        {% if voluntario.cep %}CEP: {{ voluntario.get_cep_formatado|default:"Não informado" }}{% endif %}
                     {% else %}
                         Não informado
                     {% endif %}
@@ -87,9 +92,21 @@
             </dl>
         </div>
         <div class="card-footer text-muted">
+            {% if request.user.tipo_usuario == 'ADMIN' and voluntario.ativo %}
             <a href="{% url 'voluntarios:excluir_voluntario' voluntario.id %}" class="btn btn-danger">
-                <i class="fas fa-trash-alt"></i> Inativar Voluntário
+                <i class="fas fa-user-times"></i> Inativar Voluntário
             </a>
+            {% elif not voluntario.ativo and request.user.tipo_usuario == 'ADMIN' %}
+            <form action="{% url 'voluntarios:reativar_voluntario' voluntario.id %}" method="post" style="display: inline;" class="me-1">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success" title="Reativar">
+                    <i class="fas fa-user-check"></i> Reativar Voluntário
+                </button>
+            </form>
+            <a href="{% url 'voluntarios:excluir_permanente_voluntario' voluntario.id %}" class="btn btn-danger ms-2" title="Excluir Permanentemente">
+                <i class="fas fa-trash-alt"></i> Excluir Permanentemente
+            </a>
+            {% endif %}
         </div>
     </div>
 </div>

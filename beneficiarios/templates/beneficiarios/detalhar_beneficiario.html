@@ -29,19 +29,24 @@
                 <dd class="col-sm-8">{{ beneficiario.get_genero_display }}</dd>
 
                 <dt class="col-sm-4">CPF:</dt>
-                <dd class="col-sm-8">{{ beneficiario.cpf|default:"Não informado" }}</dd>
+                <dd class="col-sm-8">{{ beneficiario.get_cpf_formatado|default:"Não informado" }}</dd>
 
                 <dt class="col-sm-4">RG:</dt>
-                <dd class="col-sm-8">{{ beneficiario.rg|default:"Não informado" }}</dd>
+                <dd class="col-sm-8">{{ beneficiario.get_rg_formatado|default:"Não informado" }}</dd>
                 
                 <dt class="col-sm-4">Status:</dt>
                 <dd class="col-sm-8">{% if beneficiario.ativo %}Ativo{% else %}Inativo{% endif %}</dd>
+
+                {% if not beneficiario.ativo and beneficiario.data_inativacao %}
+                <dt class="col-sm-4">Data de Inativação:</dt>
+                <dd class="col-sm-8">{{ beneficiario.data_inativacao|date:"d/m/Y H:i" }}</dd>
+                {% endif %}
             </dl>
             <hr>
             <h4 class="card-title">Endereço</h4>
             <dl class="row">
                 <dt class="col-sm-4">CEP:</dt>
-                <dd class="col-sm-8">{{ beneficiario.cep|default:"Não informado" }}</dd>
+                <dd class="col-sm-8">{{ beneficiario.get_cep_formatado|default:"Não informado" }}</dd>
                 <dt class="col-sm-4">Logradouro:</dt>
                 <dd class="col-sm-8">{{ beneficiario.logradouro|default:"Não informado" }}</dd>
                 <dt class="col-sm-4">Número:</dt>
@@ -59,9 +64,9 @@
             <h4 class="card-title">Contato</h4>
             <dl class="row">
                 <dt class="col-sm-4">Telefone Principal:</dt>
-                <dd class="col-sm-8">{{ beneficiario.telefone_principal|default:"Não informado" }}</dd>
+                <dd class="col-sm-8">{{ beneficiario.get_telefone_principal_formatado|default:"Não informado" }}</dd>
                 <dt class="col-sm-4">Telefone Secundário:</dt>
-                <dd class="col-sm-8">{{ beneficiario.telefone_secundario|default:"Não informado" }}</dd>
+                <dd class="col-sm-8">{{ beneficiario.get_telefone_secundario_formatado|default:"Não informado" }}</dd>
                 <dt class="col-sm-4">Email:</dt>
                 <dd class="col-sm-8">{{ beneficiario.email|default:"Não informado" }}</dd>
             </dl>
@@ -87,9 +92,25 @@
             </dl>
         </div>
         <div class="card-footer text-muted">
-            <a href="{% url 'beneficiarios:excluir_beneficiario' beneficiario.id %}" class="btn btn-danger">
-                <i class="fas fa-user-times"></i> Inativar Beneficiário
-            </a>
+            {% if beneficiario.ativo %}
+                {# Colaboradores podem inativar beneficiários #}
+                <a href="{% url 'beneficiarios:excluir_beneficiario' beneficiario.id %}" class="btn btn-warning"> {# Mudado para warning para diferenciar de exclusão permanente #}
+                    <i class="fas fa-user-times"></i> Inativar Beneficiário
+                </a>
+            {% else %}
+                {# Todos podem ver o botão de reativar se tiverem acesso à página de detalhes de um inativo #}
+                <form action="{% url 'beneficiarios:reativar_beneficiario' beneficiario.id %}" method="post" style="display: inline;" class="me-1">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success" title="Reativar">
+                        <i class="fas fa-user-check"></i> Reativar Beneficiário
+                    </button>
+                </form>
+                {% if request.user.tipo_usuario == 'ADMIN' %}
+                <a href="{% url 'beneficiarios:excluir_permanente_beneficiario' beneficiario.id %}" class="btn btn-danger ms-2" title="Excluir Permanentemente">
+                    <i class="fas fa-trash-alt"></i> Excluir Permanentemente
+                </a>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
 </div>

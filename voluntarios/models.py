@@ -50,6 +50,7 @@ class Voluntario(models.Model):
 
     data_cadastro = models.DateTimeField(auto_now_add=True, verbose_name='Data de Cadastro')
     ativo = models.BooleanField(default=True, verbose_name='Ativo')
+    data_inativacao = models.DateTimeField(null=True, blank=True, verbose_name='Data de Inativação')
 
     class Meta:
         verbose_name = 'Voluntário'
@@ -65,13 +66,35 @@ class Voluntario(models.Model):
             # Se o RG armazenado tiver 9 caracteres (8 números + DV)
             if len(self.rg) == 9:
                 return f"{self.rg[0:2]}.{self.rg[2:5]}.{self.rg[5:8]}-{self.rg[8]}"
-            # Formato antigo RJ (sem DV explícito na máscara, mas parte dos 8 digitos)
-            # ou outros formatos com 8 dígitos totais
+            
             elif len(self.rg) == 8:
                  return f"{self.rg[0:2]}.{self.rg[2:5]}.{self.rg[5:8]}"
-            # Adicionar mais lógicas se necessário ou apenas retornar o RG puro
+    
             return self.rg 
         return ""
+
+    def get_cpf_formatado(self):
+        if self.cpf:
+            cpf_numeros = ''.join(filter(str.isdigit, self.cpf))
+            if len(cpf_numeros) == 11:
+                return f"{cpf_numeros[:3]}.{cpf_numeros[3:6]}.{cpf_numeros[6:9]}-{cpf_numeros[9:]}"
+        return self.cpf or ""
+
+    def get_telefone_formatado(self):
+        if self.telefone:
+            tel_numeros = ''.join(filter(str.isdigit, self.telefone))
+            if len(tel_numeros) == 11: # (XX) XXXXX-XXXX
+                return f"({tel_numeros[:2]}) {tel_numeros[2:7]}-{tel_numeros[7:]}"
+            elif len(tel_numeros) == 10: # (XX) XXXX-XXXX
+                return f"({tel_numeros[:2]}) {tel_numeros[2:6]}-{tel_numeros[6:]}"
+        return self.telefone or ""
+
+    def get_cep_formatado(self):
+        if self.cep:
+            cep_numeros = ''.join(filter(str.isdigit, self.cep))
+            if len(cep_numeros) == 8:
+                return f"{cep_numeros[:5]}-{cep_numeros[5:]}"
+        return self.cep or ""
 
     def get_disponibilidade_formatada(self):
         dias_semana = [

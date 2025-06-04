@@ -1,15 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required # Para proteger views
+from django.utils import timezone # Adicionado para data_inativacao
+from django.urls import reverse # Adicionado para construir URL com query string
 from .models import Voluntario
 from .forms import FormularioVoluntario
+from contas.decorators import admin_required # Importar o decorator
 
 @login_required
 def listar_voluntarios(request):
-    voluntarios = Voluntario.objects.filter(ativo=True).order_by('nome_completo')
+    filtro_ativo_param = request.GET.get('filtro_ativo', 'ativos')
+
+    if filtro_ativo_param == 'inativos':
+        voluntarios = Voluntario.objects.filter(ativo=False).order_by('nome_completo')
+        titulo_pagina_especifico = 'Voluntários Inativos'
+    else: # 'ativos' ou qualquer outro valor
+        voluntarios = Voluntario.objects.filter(ativo=True).order_by('nome_completo')
+        titulo_pagina_especifico = 'Voluntários Ativos'
+        filtro_ativo_param = 'ativos' # Garante que o valor seja 'ativos' se não for 'inativos'
+
     contexto = {
         'voluntarios': voluntarios,
-        'titulo_pagina': 'Voluntários Cadastrados'
+        'titulo_pagina': titulo_pagina_especifico,
+        'filtro_ativo_atual': filtro_ativo_param
     }
     return render(request, 'voluntarios/listar_voluntarios.html', contexto)
 
@@ -19,7 +32,7 @@ def cadastrar_voluntario(request):
         form = FormularioVoluntario(request.POST)
         if form.is_valid():
             try:
-                form.save() # O método save do formulário já lida com a criação do usuário
+                form.save() # O método save do formulário lida com a criação do usuário
                 messages.success(request, 'Voluntário cadastrado com sucesso!')
                 return redirect('voluntarios:listar_voluntarios')
             except Exception as e:
@@ -36,7 +49,7 @@ def cadastrar_voluntario(request):
     }
     return render(request, 'voluntarios/formulario_voluntario.html', contexto)
 
-# Views para Detalhar, Editar e Excluir (a serem implementadas depois)
+# Views para Detalhar, Editar e Excluir
 @login_required
 def detalhar_voluntario(request, voluntario_id):
     voluntario = get_object_or_404(Voluntario, pk=voluntario_id)
@@ -61,13 +74,6 @@ def editar_voluntario(request, voluntario_id):
     else:
         form = FormularioVoluntario(instance=voluntario)
         # Se o voluntário tem um usuário associado, preenche os campos de usuário no formulário
-        # O __init__ do formulário já faz isso, mas podemos garantir aqui se necessário.
-        # if hasattr(voluntario, 'usuario') and voluntario.usuario:
-        #     form.fields['username'].initial = voluntario.usuario.username
-        #     form.fields['email'].initial = voluntario.usuario.email
-        #     form.fields['password'].required = False
-        #     form.fields['confirmar_password'].required = False
-
 
     contexto = {
         'form': form,
@@ -77,12 +83,17 @@ def editar_voluntario(request, voluntario_id):
     return render(request, 'voluntarios/formulario_voluntario.html', contexto)
 
 @login_required
+@admin_required # Apenas admin pode inativar outros voluntários
 def excluir_voluntario(request, voluntario_id):
+    # Um admin não deve poder inativar a si mesmo através desta view
+    # (se o voluntario.usuario for o request.user, impedir ou tratar de forma especial)
+    # Esta verificação pode ser adicionada se necessário.
     voluntario = get_object_or_404(Voluntario, pk=voluntario_id)
     if request.method == 'POST':
         try:
             # Em vez de excluir, podemos apenas inativar o voluntário e seu usuário
             voluntario.ativo = False
+            voluntario.data_inativacao = timezone.now() # Registrar data de inativação
             if hasattr(voluntario, 'usuario') and voluntario.usuario:
                 voluntario.usuario.is_active = False
                 voluntario.usuario.save()
@@ -97,3 +108,61 @@ def excluir_voluntario(request, voluntario_id):
         'titulo_pagina': f'Confirmar Inativação de {voluntario.nome_completo}'
     }
     return render(request, 'voluntarios/confirmar_exclusao_voluntario.html', contexto)
+
+@login_required
+def reativar_voluntario(request, voluntario_id):
+    voluntario = get_object_or_404(Voluntario, pk=voluntario_id)
+    if request.method == 'POST': # Geralmente a reativação é uma ação POST para evitar CSRF com links diretos
+        try:
+            voluntario.ativo = True
+            voluntario.data_inativacao = None # Limpar data de inativação
+            if hasattr(voluntario, 'usuario') and voluntario.usuario:
+                voluntario.usuario.is_active = True
+                voluntario.usuario.save()
+            voluntario.save()
+            messages.success(request, f'Voluntário {voluntario.nome_completo} reativado com sucesso.')
+        except Exception as e:
+            messages.error(request, f'Erro ao reativar o voluntário: {e}')
+        # Redireciona para a lista de inativos para ver que ele sumiu de lá, 
+        # ou para a lista de ativos para vê-lo lá.
+        return redirect('voluntarios:listar_voluntarios') # Por padrão, vai para ativos. Pode adicionar ?filtro_ativo=inativos se preferir
+    
+    # Se não for POST, pode mostrar uma página de confirmação (opcional)
+    # ou simplesmente redirecionar se a intenção é que o link GET já reative (menos seguro)
+    # Para este exemplo, vamos assumir que o botão "Reativar" no template fará um POST
+    # ou que um GET é aceitável para esta ação (mais simples de implementar no template inicialmente)
+    # Se for GET direto:
+    try:
+        voluntario.ativo = True
+        voluntario.data_inativacao = None
+        if hasattr(voluntario, 'usuario') and voluntario.usuario:
+            voluntario.usuario.is_active = True
+            voluntario.usuario.save()
+        voluntario.save()
+        messages.success(request, f'Voluntário {voluntario.nome_completo} reativado com sucesso.')
+    except Exception as e:
+        messages.error(request, f'Erro ao reativar o voluntário: {e}')
+    return redirect(request.META.get('HTTP_REFERER', 'voluntarios:listar_voluntarios'))
+
+@login_required
+@admin_required # Apenas admin pode excluir permanentemente
+def excluir_permanente_voluntario(request, voluntario_id):
+    voluntario = get_object_or_404(Voluntario, pk=voluntario_id, ativo=False) # Garante que só inativos podem ser excluídos permanentemente
+    if request.method == 'POST':
+        try:
+            nome_voluntario = voluntario.nome_completo
+            # O OneToOneField com usuario tem on_delete=models.CASCADE, 
+            # então o usuário associado será excluído automaticamente.
+            voluntario.delete()
+            messages.success(request, f'Voluntário {nome_voluntario} excluído permanentemente com sucesso.')
+        except Exception as e:
+            messages.error(request, f'Erro ao excluir permanentemente o voluntário: {e}')
+        
+        redirect_url = reverse('voluntarios:listar_voluntarios') + '?filtro_ativo=inativos'
+        return redirect(redirect_url) # Volta para a lista de inativos
+    
+    contexto = {
+        'voluntario': voluntario,
+        'titulo_pagina': f'Confirmar Exclusão Permanente de {voluntario.nome_completo}'
+    }
+    return render(request, 'voluntarios/confirmar_exclusao_permanente_voluntario.html', contexto)

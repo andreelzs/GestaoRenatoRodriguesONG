@@ -124,6 +124,21 @@
                 {% if form.confirmar_password.errors %}<div class="invalid-feedback d-block">{{ form.confirmar_password.errors|join:", " }}</div>{% endif %}
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                {{ form.tipo_conta_usuario.label_tag }}
+                <div>
+                {% for radio in form.tipo_conta_usuario %}
+                    <div class="form-check form-check-inline">
+                        {{ radio.tag }}
+                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                    </div>
+                {% endfor %}
+                </div>
+                {% if form.tipo_conta_usuario.errors %}<div class="invalid-feedback d-block">{{ form.tipo_conta_usuario.errors|join:", " }}</div>{% endif %}
+            </div>
+        </div>
         
         <hr>
         <h4>Detalhes Adicionais do Voluntário</h4>
