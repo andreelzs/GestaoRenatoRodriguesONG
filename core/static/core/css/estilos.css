@@ -1,7 +1,147 @@
 /* Estilos personalizados para o app core */
 
-/* Exemplo:
-body {
-    font-family: 'Arial', sans-serif;
+:root {
+  --cor-primaria-ong: #768C27;
+  --cor-secundaria-ong: #A3BF3F;
+  --cor-destaque-ong: #A9D943;
+
+  /* Cores de texto para contraste (branco ou preto dependendo do fundo) */
+  --cor-texto-sobre-primaria: #FFFFFF; /* Branco sobre verde escuro */
+  --cor-texto-sobre-secundaria: #FFFFFF; /* Branco sobre verde médio */
+  --cor-texto-sobre-destaque: #212529;   /* Preto sobre verde claro para melhor leitura */
 }
-*/
+
+/* Sobrescrevendo cores primárias do Bootstrap */
+.bg-primary {
+  background-color: var(--cor-primaria-ong) !important;
+  color: var(--cor-texto-sobre-primaria) !important;
+}
+
+.text-primary {
+  color: var(--cor-primaria-ong) !important;
+}
+
+.btn-primary {
+  background-color: var(--cor-primaria-ong) !important;
+  border-color: var(--cor-primaria-ong) !important;
+  color: var(--cor-texto-sobre-primaria) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: color-mix(in srgb, var(--cor-primaria-ong) 85%, black) !important;
+  border-color: color-mix(in srgb, var(--cor-primaria-ong) 80%, black) !important;
+  color: var(--cor-texto-sobre-primaria) !important;
+}
+
+.btn-outline-primary {
+  color: var(--cor-primaria-ong) !important;
+  border-color: var(--cor-primaria-ong) !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  background-color: var(--cor-primaria-ong) !important;
+  border-color: var(--cor-primaria-ong) !important;
+  color: var(--cor-texto-sobre-primaria) !important;
+}
+
+/* Sobrescrevendo cores secundárias do Bootstrap (usando sua cor secundária/destaque) */
+.bg-secondary {
+  background-color: var(--cor-secundaria-ong) !important;
+  color: var(--cor-texto-sobre-secundaria) !important;
+}
+
+.text-secondary {
+  color: var(--cor-secundaria-ong) !important;
+}
+
+.btn-secondary {
+  background-color: var(--cor-secundaria-ong) !important;
+  border-color: var(--cor-secundaria-ong) !important;
+  color: var(--cor-texto-sobre-secundaria) !important;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+  background-color: color-mix(in srgb, var(--cor-secundaria-ong) 85%, black) !important;
+  border-color: color-mix(in srgb, var(--cor-secundaria-ong) 80%, black) !important;
+  color: var(--cor-texto-sobre-secundaria) !important;
+}
+
+.btn-outline-secondary {
+  color: var(--cor-secundaria-ong) !important;
+  border-color: var(--cor-secundaria-ong) !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+  background-color: var(--cor-secundaria-ong) !important;
+  border-color: var(--cor-secundaria-ong) !important;
+  color: var(--cor-texto-sobre-secundaria) !important;
+}
+
+
+/* Sobrescrevendo cores de informação do Bootstrap (usando sua cor de destaque/informativa) */
+.bg-info {
+  background-color: var(--cor-destaque-ong) !important;
+  color: var(--cor-texto-sobre-destaque) !important;
+}
+
+.text-info {
+  color: var(--cor-destaque-ong) !important;
+}
+
+.alert-info {
+  background-color: var(--cor-destaque-ong) !important;
+  border-color: color-mix(in srgb, var(--cor-destaque-ong) 90%, #00000040) !important; /* Borda um pouco mais escura */
+  color: var(--cor-texto-sobre-destaque) !important;
+}
+
+.btn-info {
+  background-color: var(--cor-destaque-ong) !important;
+  border-color: var(--cor-destaque-ong) !important;
+  color: var(--cor-texto-sobre-destaque) !important;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active {
+  background-color: color-mix(in srgb, var(--cor-destaque-ong) 85%, black) !important;
+  border-color: color-mix(in srgb, var(--cor-destaque-ong) 80%, black) !important;
+  color: var(--cor-texto-sobre-destaque) !important;
+}
+
+.btn-outline-info {
+  color: var(--cor-destaque-ong) !important;
+  border-color: var(--cor-destaque-ong) !important;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:focus,
+.btn-outline-info:active {
+  background-color: var(--cor-destaque-ong) !important;
+  border-color: var(--cor-destaque-ong) !important;
+  color: var(--cor-texto-sobre-destaque) !important;
+}
+
+/* Estilos para links gerais */
+a {
+  color: var(--cor-primaria-ong);
+}
+
+a:hover, a:focus {
+  color: color-mix(in srgb, var(--cor-primaria-ong) 80%, black);
+}
+
+/* Estilizando a navbar com as cores da ONG */
+.navbar-custom {
+    background-color: var(--cor-primaria-ong) !important;
+}
+.navbar-custom .navbar-brand { /* Mantém o estilo do brand separado */
+    color: var(--cor-texto-sobre-primaria) !important;
+}
