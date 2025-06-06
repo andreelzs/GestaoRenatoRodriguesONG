@@ -39,6 +39,9 @@
                             <a href="{% url 'voluntarios:detalhar_voluntario' voluntario.id %}">
                                 {{ voluntario.nome_completo }}
                             </a>
+                            {% if voluntario.usuario.is_staff %}
+                                <span class="badge bg-info ms-1">admin</span>
+                            {% endif %}
                         </td>
                         <td>{{ voluntario.get_cpf_formatado|default:"Não informado" }}</td>
                         <td>{{ voluntario.get_telefone_formatado|default:"Não informado" }}</td>

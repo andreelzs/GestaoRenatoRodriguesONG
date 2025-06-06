@@ -4,12 +4,12 @@ from django.contrib.auth.models import AbstractUser
 class Usuario(AbstractUser):
     TIPOS_USUARIO = [
         ('ADMIN', 'Administrador'),
-        ('COLAB', 'Colaborador'),
+        ('VOLUNT', 'Voluntário'),
     ]
     tipo_usuario = models.CharField(
-        max_length=5,
+        max_length=6, 
         choices=TIPOS_USUARIO,
-        default='COLAB',
+        default='VOLUNT',
         verbose_name='Tipo de Usuário'
     )
 

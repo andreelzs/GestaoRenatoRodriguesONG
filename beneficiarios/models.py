@@ -13,9 +13,6 @@ class Beneficiario(models.Model):
         ('FC', 'Fundamental Completo'),
         ('MI', 'Médio Incompleto'),
         ('MC', 'Médio Completo'),
-        ('SI', 'Superior Incompleto'),
-        ('SC', 'Superior Completo'),
-        ('PG', 'Pós-graduação'),
         ('NI', 'Não Informado'),
     ]
 
