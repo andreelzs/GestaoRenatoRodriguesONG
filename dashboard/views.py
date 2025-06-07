@@ -58,16 +58,17 @@ def painel_principal(request):
         'total_tarefas_pendentes': Tarefa.objects.filter(status='PEND').count(),
         'total_tarefas_concluidas': Tarefa.objects.filter(status='CONC').count(),
         
-        'status_labels_json': json.dumps(status_labels),
-        'status_data_json': json.dumps(status_data),
-        'voluntario_status_labels_json': json.dumps(voluntario_status_labels),
-        'voluntario_status_data_json': json.dumps(voluntario_status_data),
-        'genero_labels_json': json.dumps(genero_labels),
-        'genero_data_json': json.dumps(genero_data),
-        'escolaridade_labels_json': json.dumps(escolaridade_labels),
-        'escolaridade_data_json': json.dumps(escolaridade_data),
+        # Passar os objetos Python diretamente, |json_script fará a serialização
+        'status_labels_json': status_labels,
+        'status_data_json': status_data,
+        'voluntario_status_labels_json': voluntario_status_labels,
+        'voluntario_status_data_json': voluntario_status_data,
+        'genero_labels_json': genero_labels,
+        'genero_data_json': genero_data,
+        'escolaridade_labels_json': escolaridade_labels,
+        'escolaridade_data_json': escolaridade_data,
 
-        'disp_labels_json': json.dumps(disp_labels),
-        'disp_datasets_json': json.dumps(disp_datasets),
+        'disp_labels_json': disp_labels,
+        'disp_datasets_json': disp_datasets,
     }
     return render(request, 'dashboard/painel_principal.html', contexto)
