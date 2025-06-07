@@ -15,15 +15,12 @@ def painel_principal(request):
     status_data = [item['total'] for item in tarefas_por_status]
 
     # 2. Contagem de voluntários 
-    #    Ou poderia ser por área de interesse, etc.
     voluntarios_ativos = Voluntario.objects.filter(ativo=True).count()
     voluntarios_inativos = Voluntario.objects.filter(ativo=False).count()
     voluntario_status_labels = ['Ativos', 'Inativos']
     voluntario_status_data = [voluntarios_ativos, voluntarios_inativos]
 
     # 3. Contagem de beneficiários por faixa etária 
-    #    Para um gráfico real de faixa etária, seria necessário calcular as idades
-    #    e agrupá-las em faixas. Aqui, vamos usar gênero como exemplo mais simples.
     beneficiarios_por_genero = Beneficiario.objects.values('genero').annotate(total=Count('genero')).order_by('genero')
     genero_labels = [dict(Beneficiario.GENERO_CHOICES).get(item['genero'], item['genero']) for item in beneficiarios_por_genero]
     genero_data = [item['total'] for item in beneficiarios_por_genero]

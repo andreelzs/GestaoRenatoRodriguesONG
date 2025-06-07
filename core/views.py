@@ -24,7 +24,7 @@ def pagina_inicial(request):
             
         mensagem_boas_vindas_display = f'Bem vindo! Você está logado como: {nome_usuario}.'
     else:
-        mensagem_boas_vindas_display = 'Faça login para acessar o sistema. Caso ainda não tenha uma conta, entre em contato com a administração da ONG'
+        mensagem_boas_vindas_display = 'Faça login para acessar o sistema. Caso ainda não tenha uma conta, entre em contato com a administração da ONG.'
 
 
     contexto = {

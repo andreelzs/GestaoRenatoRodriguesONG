@@ -20,6 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from .env file
 load_dotenv(BASE_DIR / '.env')
 
+# Allow synchronous operations in async context for livereload in development
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -77,6 +80,7 @@ INSTALLED_APPS = [
     'beneficiarios.apps.BeneficiariosConfig',
     'tarefas.apps.TarefasConfig',
     'dashboard.apps.DashboardConfig',
+    'cursos.apps.CursosConfig',
 ]
 
 MIDDLEWARE = [

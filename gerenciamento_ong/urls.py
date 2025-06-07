@@ -19,10 +19,11 @@ from django.urls import path, include # Adicionar include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')), 
-    path('contas/', include('contas.urls')),
-    path('voluntarios/', include('voluntarios.urls')),
-    path('beneficiarios/', include('beneficiarios.urls')),
-    path('tarefas/', include('tarefas.urls')),
-    path('dashboard/', include('dashboard.urls')),
+    path('', include('core.urls', namespace='core')),
+    path('contas/', include('contas.urls', namespace='contas')),
+    path('voluntarios/', include('voluntarios.urls', namespace='voluntarios')),
+    path('beneficiarios/', include('beneficiarios.urls', namespace='beneficiarios')),
+    path('tarefas/', include('tarefas.urls', namespace='tarefas')),
+    path('dashboard/', include('dashboard.urls', namespace='dashboard')),
+    path('cursos/', include('cursos.urls', namespace='cursos')), # URLs do app cursos
 ]

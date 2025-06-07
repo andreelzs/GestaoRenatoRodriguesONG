@@ -34,13 +34,11 @@ class Tarefa(models.Model):
     data_prevista_conclusao = models.DateField(blank=True, null=True, verbose_name='Prazo de Entrega')
     data_conclusao_efetiva = models.DateField(blank=True, null=True, verbose_name='Data de Conclusão Efetiva')
     
-    voluntario_responsavel = models.ForeignKey(
-        'voluntarios.Voluntario', # Usando string para evitar importação circular
-        on_delete=models.SET_NULL, # Se o voluntário for excluído, a tarefa não é, mas fica sem responsável
-        null=True,
-        blank=True, # Uma tarefa pode ser criada sem um voluntário inicialmente
-        related_name='tarefas_atribuidas',
-        verbose_name='Voluntário Responsável'
+    voluntarios_responsaveis = models.ManyToManyField(
+        'voluntarios.Voluntario',
+        blank=True, # Uma tarefa pode ser criada sem voluntários inicialmente
+        related_name='tarefas_responsaveis', # Novo related_name para evitar conflitos
+        verbose_name='Voluntários Responsáveis'
     )
     
     atribuido_por = models.ForeignKey(

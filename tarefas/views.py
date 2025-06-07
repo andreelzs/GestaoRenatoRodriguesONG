@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger # Adicionado para paginação
 from .models import Tarefa
 from .forms import FormularioTarefa
 from voluntarios.models import Voluntario # Para filtros ou informações adicionais
@@ -24,18 +25,28 @@ def listar_tarefas(request):
         tarefas = tarefas.filter(voluntario_responsavel_id=filtro_voluntario_id)
     
     # Ordenar por prioridade (maior primeiro), depois por prazo e título
-    tarefas = tarefas.order_by('-prioridade', 'data_prevista_conclusao', 'titulo')
+    tarefas_list = tarefas.order_by('-prioridade', 'data_prevista_conclusao', 'titulo') # Renomeado
     
+    paginator = Paginator(tarefas_list, 10) # 10 tarefas por página
+    page_number = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
     voluntarios_ativos = Voluntario.objects.filter(ativo=True)
 
     contexto = {
-        'tarefas': tarefas,
+        'page_obj': page_obj, # Objeto da página atual
         'titulo_pagina': 'Lista de Tarefas',
         'status_choices': Tarefa.STATUS_TAREFA, # Para o filtro
         'voluntarios_ativos': voluntarios_ativos, # Para o filtro
         'filtro_status_atual': filtro_status,
         'filtro_voluntario_atual': int(filtro_voluntario_id) if filtro_voluntario_id else None,
         'termo_pesquisa_titulo_atual': termo_pesquisa_titulo, # Para preencher o campo de pesquisa
+        'is_paginated': True # Para o template saber que há paginação
     }
     return render(request, 'tarefas/listar_tarefas.html', contexto)
 
@@ -50,6 +61,7 @@ def cadastrar_tarefa(request):
                 if tarefa.status == 'CONC' and not tarefa.data_conclusao_efetiva:
                     tarefa.data_conclusao_efetiva = timezone.now().date()
                 tarefa.save()
+                form.save_m2m() # Adicionado para salvar relações ManyToMany
                 messages.success(request, 'Tarefa cadastrada com sucesso!')
                 return redirect('tarefas:listar_tarefas')
             except Exception as e:
@@ -87,6 +99,7 @@ def editar_tarefa(request, tarefa_id):
                 elif tarefa.status == 'CONC' and tarefa_editada.status != 'CONC':
                      tarefa_editada.data_conclusao_efetiva = None
                 tarefa_editada.save()
+                form.save_m2m() # Adicionado para salvar relações ManyToMany
                 messages.success(request, 'Tarefa atualizada com sucesso!')
                 return redirect('tarefas:detalhar_tarefa', tarefa_id=tarefa.id)
             except Exception as e:

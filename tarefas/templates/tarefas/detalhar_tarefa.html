@@ -55,14 +55,20 @@
                 <dd class="col-sm-9">{{ tarefa.data_conclusao_efetiva|date:"d/m/Y" }}</dd>
                 {% endif %}
 
-                <dt class="col-sm-3">Voluntário Responsável:</dt>
+                <dt class="col-sm-3">Voluntários Responsáveis:</dt> {# Label alterado #}
                 <dd class="col-sm-9">
-                    {% if tarefa.voluntario_responsavel %}
-                        <a href="{% url 'voluntarios:detalhar_voluntario' tarefa.voluntario_responsavel.id %}">
-                            {{ tarefa.voluntario_responsavel.nome_completo }}
-                        </a>
+                    {% if tarefa.voluntarios_responsaveis.all %}
+                        <ul class="list-unstyled mb-0">
+                        {% for voluntario in tarefa.voluntarios_responsaveis.all %}
+                            <li>
+                                <a href="{% url 'voluntarios:detalhar_voluntario' voluntario.id %}">
+                                    {{ voluntario.nome_completo }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                        </ul>
                     {% else %}
-                        Ninguém atribuído
+                        Nenhum voluntário atribuído
                     {% endif %}
                 </dd>
 

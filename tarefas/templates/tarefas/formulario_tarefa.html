@@ -43,11 +43,23 @@
         </div>
 
         <div class="mb-3">
-            {{ form.voluntario_responsavel.label_tag }}
-            {{ form.voluntario_responsavel }}
-            {% if form.voluntario_responsavel.errors %}<div class="invalid-feedback d-block">{{ form.voluntario_responsavel.errors|join:", " }}</div>{% endif %}
-            {% if form.voluntario_responsavel.help_text %}
-                <small class="form-text text-muted">{{ form.voluntario_responsavel.help_text }}</small>
+            {{ form.voluntarios_responsaveis.label_tag }}
+            <div id="id_voluntarios_responsaveis_container" class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                {% for choice_value, choice_label in form.voluntarios_responsaveis.field.choices %}
+                <div class="form-check">
+                    <input type="checkbox" name="{{ form.voluntarios_responsaveis.html_name }}" value="{{ choice_value }}" class="form-check-input" id="id_{{ form.voluntarios_responsaveis.html_name }}_{{ forloop.counter0 }}"
+                           {% if form.voluntarios_responsaveis.value %}{% if choice_value|stringformat:"s" in form.voluntarios_responsaveis.value|stringformat:"s" or choice_value in form.voluntarios_responsaveis.value %}checked{% endif %}{% endif %}>
+                    <label class="form-check-label" for="id_{{ form.voluntarios_responsaveis.html_name }}_{{ forloop.counter0 }}">
+                        {{ choice_label }}
+                    </label>
+                </div>
+                {% empty %}
+                <p class="text-muted">Nenhum voluntário disponível para seleção.</p>
+                {% endfor %}
+            </div>
+            {% if form.voluntarios_responsaveis.errors %}<div class="invalid-feedback d-block">{{ form.voluntarios_responsaveis.errors|join:", " }}</div>{% endif %}
+            {% if form.voluntarios_responsaveis.help_text %}
+                <small class="form-text text-muted">{{ form.voluntarios_responsaveis.help_text }}</small>
             {% endif %}
         </div>
         
@@ -56,11 +68,7 @@
             {{ form.observacoes }}
             {% if form.observacoes.errors %}<div class="invalid-feedback d-block">{{ form.observacoes.errors|join:", " }}</div>{% endif %}
         </div>
-
-        {# O campo 'atribuido_por' é preenchido na view, não aparece no formulário #}
-        {# O campo 'data_conclusao_efetiva' é preenchido na view, não aparece no formulário de criação/edição direta #}
-
-
+        
         <div class="mt-4">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i> Salvar Tarefa

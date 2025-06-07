@@ -3,15 +3,17 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone # Adicionado para data_inativacao
 from django.urls import reverse # Adicionado para construir URL com query string
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger # Adicionado para paginação
 from .models import Beneficiario
 from .forms import FormularioBeneficiario
 from contas.decorators import admin_required # Importar o decorator
+from cursos.models import Certificado # Adicionar importação
 
 @login_required
 def listar_beneficiarios(request):
     termo_pesquisa_nome = request.GET.get('q_nome', None)
-    filtro_ativo_param = request.GET.get('filtro_ativo', 'ativos') # Padrão para 'ativos'
-
+    filtro_ativo_param = request.GET.get('filtro_ativo', 'ativos') 
+    
     if filtro_ativo_param == 'inativos':
         beneficiarios = Beneficiario.objects.filter(ativo=False)
         titulo_pagina_especifico = 'Beneficiários Inativos'
@@ -23,12 +25,24 @@ def listar_beneficiarios(request):
     if termo_pesquisa_nome:
         beneficiarios = beneficiarios.filter(nome_completo__icontains=termo_pesquisa_nome)
     
-    beneficiarios = beneficiarios.order_by('nome_completo')
+    beneficiarios_list = beneficiarios.order_by('nome_completo') # Renomeado para evitar conflito com o page_obj
+
+    paginator = Paginator(beneficiarios_list, 10) # 10 beneficiários por página
+    page_number = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        # Se a página não for um inteiro, entrega a primeira página.
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        # Se a página estiver fora do intervalo (ex: 9999), entrega a última página de resultados.
+        page_obj = paginator.page(paginator.num_pages)
     
     contexto = {
-        'beneficiarios': beneficiarios,
+        'page_obj': page_obj, # Objeto da página atual
         'titulo_pagina': titulo_pagina_especifico,
-        'filtro_ativo_atual': filtro_ativo_param
+        'filtro_ativo_atual': filtro_ativo_param,
+        'is_paginated': True # Para o template saber que há paginação
         # O template já acessa request.GET.q_nome para o valor do input de pesquisa
     }
     return render(request, 'beneficiarios/listar_beneficiarios.html', contexto)
@@ -56,8 +70,10 @@ def cadastrar_beneficiario(request):
 @login_required
 def detalhar_beneficiario(request, beneficiario_id):
     beneficiario = get_object_or_404(Beneficiario, pk=beneficiario_id)
+    certificados = Certificado.objects.filter(beneficiario=beneficiario).order_by('-data_conclusao', 'curso__nome_curso')
     contexto = {
         'beneficiario': beneficiario,
+        'certificados': certificados,
         'titulo_pagina': f'Detalhes de {beneficiario.nome_completo}'
     }
     return render(request, 'beneficiarios/detalhar_beneficiario.html', contexto)
@@ -106,7 +122,7 @@ def excluir_beneficiario(request, beneficiario_id):
 @login_required
 def reativar_beneficiario(request, beneficiario_id):
     beneficiario = get_object_or_404(Beneficiario, pk=beneficiario_id)
-    # Para consistência e segurança, idealmente seria um POST, mas GET é mais simples para um link direto
+
     try:
         beneficiario.ativo = True
         beneficiario.data_inativacao = None # Limpar data de inativação
@@ -115,7 +131,7 @@ def reativar_beneficiario(request, beneficiario_id):
     except Exception as e:
         messages.error(request, f'Erro ao reativar o beneficiário: {e}')
     
-    # Tenta redirecionar para a página anterior (lista de inativos) ou para a lista padrão
+
     return redirect(request.META.get('HTTP_REFERER', 'beneficiarios:listar_beneficiarios'))
 
 @login_required
