@@ -1,13 +1,13 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block title %}{{ titulo_pagina }} - {{ block.super }}{% endblock title %}
+{% block title %}{{ titulo_pagina|default:"Dashboard" }} - {{ block.super }}{% endblock title %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">{{ titulo_pagina }}</h1>
+    <h1 class="mb-4">{{ titulo_pagina|default:"Dashboard da ONG" }}</h1>
 
-    {# Dados JSON para os gráficos #}
+    {# Dados JSON para os gráficos#}
     {{ status_labels_json|json_script:"status-labels-data" }}
     {{ status_data_json|json_script:"status-data-data" }}
     {{ voluntario_status_labels_json|json_script:"voluntario-status-labels-data" }}
@@ -21,32 +21,32 @@
 
     {# Cards com estatísticas rápidas #}
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary h-100">
                 <div class="card-header">Total de Voluntários</div>
                 <div class="card-body">
                     <h4 class="card-title">{{ total_voluntarios }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success h-100">
                 <div class="card-header">Total de Beneficiários</div>
                 <div class="card-body">
                     <h4 class="card-title">{{ total_beneficiarios }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
+        <div class="col-md-3 mb-3">
+            <div class="card text-dark bg-warning h-100"> 
                 <div class="card-header">Tarefas Pendentes</div>
                 <div class="card-body">
                     <h4 class="card-title">{{ total_tarefas_pendentes }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-dark bg-info mb-3">
+        <div class="col-md-3 mb-3">
+            <div class="card text-dark bg-info h-100">
                 <div class="card-header">Tarefas Concluídas</div>
                 <div class="card-body">
                     <h4 class="card-title">{{ total_tarefas_concluidas }}</h4>
@@ -56,61 +56,85 @@
     </div>
 
     <hr>
-    <h2 class="mt-4 mb-3">Voluntários e Tarefas</h2>
 
-    <div class="row">
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header">Status dos Voluntários</div>
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <canvas id="graficoVoluntariosStatus"></canvas>
+    <!-- Abas de Navegação -->
+    <ul class="nav nav-tabs mb-3" id="dashboardAbas" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="voluntarios-aba" data-bs-toggle="tab" data-bs-target="#voluntarios-conteudo" type="button" role="tab" aria-controls="voluntarios-conteudo" aria-selected="true">Voluntários</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tarefas-aba" data-bs-toggle="tab" data-bs-target="#tarefas-conteudo" type="button" role="tab" aria-controls="tarefas-conteudo" aria-selected="false">Tarefas</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="beneficiarios-aba" data-bs-toggle="tab" data-bs-target="#beneficiarios-conteudo" type="button" role="tab" aria-controls="beneficiarios-conteudo" aria-selected="false">Beneficiários</button>
+        </li>
+    </ul>
+
+    <!-- Conteúdo das Abas -->
+    <div class="tab-content pt-3" id="dashboardAbasConteudo">
+        <!-- Aba Voluntários -->
+        <div class="tab-pane fade show active" id="voluntarios-conteudo" role="tabpanel" aria-labelledby="voluntarios-aba" tabindex="0">
+            <h3 class="mb-3">Análises de Voluntários</h3>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Status dos Voluntários</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <canvas id="graficoVoluntariosStatus"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Disponibilidade de Voluntários por Dia/Turno</div>
+                        <div class="card-body p-3">
+                            <div style="min-height: 300px;"> {# Garante altura mínima para o gráfico de barras #}
+                                <canvas id="graficoDisponibilidadeVoluntarios"></canvas>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header">Tarefas por Status</div>
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <canvas id="graficoTarefasStatus"></canvas>
+
+        <!-- Aba Tarefas -->
+        <div class="tab-pane fade" id="tarefas-conteudo" role="tabpanel" aria-labelledby="tarefas-aba" tabindex="0">
+            <h3 class="mb-3">Análises de Tarefas</h3>
+            <div class="row">
+                 <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Tarefas por Status</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <canvas id="graficoTarefasStatus"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-8 col-md-12 mb-4">
-            <div class="card">
-                <div class="card-header">Disponibilidade de Voluntários por Dia/Turno</div>
-                <div class="card-body">
-                    <div style="overflow-x: auto; min-width: 700px;">
-                        <canvas id="graficoDisponibilidadeVoluntarios"></canvas>
+
+        <!-- Aba Beneficiários -->
+        <div class="tab-pane fade" id="beneficiarios-conteudo" role="tabpanel" aria-labelledby="beneficiarios-aba" tabindex="0">
+            <h3 class="mb-3">Análises de Beneficiários</h3>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Beneficiários por Gênero</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <canvas id="graficoBeneficiariosGenero"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Beneficiários por Escolaridade</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <canvas id="graficoBeneficiariosEscolaridade"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <hr>
-    <h2 class="mt-4 mb-3">Beneficiários</h2>
-
-    <div class="row">
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header">Beneficiários por Gênero</div>
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <canvas id="graficoBeneficiariosGenero"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header">Beneficiários por Escolaridade</div>
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <canvas id="graficoBeneficiariosEscolaridade"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 {% endblock content %}
 
