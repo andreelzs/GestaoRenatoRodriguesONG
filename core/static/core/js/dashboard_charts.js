@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         borderWidth: 1
                     }]
                 },
-                options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } }, plugins: { legend: { display: false } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } }, plugins: { legend: { display: false } } }
             });
             renderedCharts[chartId] = true;
         } else {
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         borderWidth: 1
                     }]
                 },
-                options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: false } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, title: { display: false } } }
             });
             renderedCharts[chartId] = true;
         } else {
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         borderWidth: 1
                     }]
                 },
-                options: { responsive: true, plugins: { legend: { position: 'top' } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
             });
             renderedCharts[chartId] = true;
         } else {
@@ -152,7 +152,146 @@ document.addEventListener('DOMContentLoaded', function () {
                         borderWidth: 1
                     }]
                 },
-                options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } }, plugins: { legend: { display: false } } }
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } }, plugins: { legend: { display: false } } }
+            });
+            renderedCharts[chartId] = true;
+        } else {
+            console.error("Dados inválidos ou ausentes para " + chartId);
+        }
+    }
+
+    function renderGraficoTarefasPrioridade() {
+        const chartId = 'graficoTarefasPrioridade';
+        if (renderedCharts[chartId] || !document.getElementById(chartId)) return;
+
+        const labels = getJsonFromScriptTag('prioridade-labels-data');
+        const data = getJsonFromScriptTag('prioridade-data-data');
+        if (labels && data && Array.isArray(labels) && Array.isArray(data)) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'pie', // Ou 'bar' se preferir
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Tarefas Ativas por Prioridade',
+                        data: data,
+                        backgroundColor: ['rgb(6, 108, 148)', 'rgba(255, 159, 64, 0.7)', 'rgb(255, 145, 0)', 'rgb(173, 10, 10)'],
+                        borderColor: ['rgb(6, 108, 148)', 'rgba(255, 159, 64, 1)', 'rgb(255, 145, 0)', 'rgb(173, 10, 10)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
+            });
+            renderedCharts[chartId] = true;
+        } else {
+            console.error("Dados inválidos ou ausentes para " + chartId);
+        }
+    }
+
+    function renderGraficoBeneficiariosFaixaEtaria() {
+        const chartId = 'graficoBeneficiariosFaixaEtaria';
+        if (renderedCharts[chartId] || !document.getElementById(chartId)) return;
+
+        const labels = getJsonFromScriptTag('faixa-etaria-labels-data');
+        const data = getJsonFromScriptTag('faixa-etaria-data-data');
+        if (labels && data && Array.isArray(labels) && Array.isArray(data)) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Beneficiários por Faixa Etária',
+                        data: data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } }, plugins: { legend: { display: false } } }
+            });
+            renderedCharts[chartId] = true;
+        } else {
+            console.error("Dados inválidos ou ausentes para " + chartId);
+        }
+    }
+
+    function renderGraficoBeneficiariosCidade() {
+        const chartId = 'graficoBeneficiariosCidade';
+        if (renderedCharts[chartId] || !document.getElementById(chartId)) return;
+
+        const labels = getJsonFromScriptTag('cidade-labels-data');
+        const data = getJsonFromScriptTag('cidade-data-data');
+        if (labels && data && Array.isArray(labels) && Array.isArray(data)) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', // Pode ser 'pie' se poucas cidades
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Top 10 Cidades (Beneficiários)',
+                        data: data,
+                        backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } }, plugins: { legend: { display: false } } }
+            });
+            renderedCharts[chartId] = true;
+        } else {
+            console.error("Dados inválidos ou ausentes para " + chartId);
+        }
+    }
+
+    function renderGraficoBeneficiariosRenda() {
+        const chartId = 'graficoBeneficiariosRenda';
+        if (renderedCharts[chartId] || !document.getElementById(chartId)) return;
+
+        const labels = getJsonFromScriptTag('renda-labels-data');
+        const data = getJsonFromScriptTag('renda-data-data');
+        if (labels && data && Array.isArray(labels) && Array.isArray(data)) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'pie', // Ou 'bar'
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Beneficiários por Renda Familiar',
+                        data: data,
+                        backgroundColor: ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)', 'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
+            });
+            renderedCharts[chartId] = true;
+        } else {
+            console.error("Dados inválidos ou ausentes para " + chartId);
+        }
+    }
+
+    function renderGraficoCertificadosPorCurso() {
+        const chartId = 'graficoCertificadosPorCurso';
+        if (renderedCharts[chartId] || !document.getElementById(chartId)) return;
+
+        const labels = getJsonFromScriptTag('curso-cert-labels-data');
+        const data = getJsonFromScriptTag('curso-cert-data-data');
+        if (labels && data && Array.isArray(labels) && Array.isArray(data)) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Certificados por Curso',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } }, plugins: { legend: { display: false } } }
             });
             renderedCharts[chartId] = true;
         } else {
@@ -171,9 +310,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const targetPaneId = event.target.getAttribute('data-bs-target');
             if (targetPaneId === '#tarefas-conteudo') {
                 renderGraficoTarefasStatus();
+                renderGraficoTarefasPrioridade();
             } else if (targetPaneId === '#beneficiarios-conteudo') {
                 renderGraficoBeneficiariosGenero();
                 renderGraficoBeneficiariosEscolaridade();
+                renderGraficoBeneficiariosFaixaEtaria();
+                renderGraficoBeneficiariosCidade();
+                renderGraficoBeneficiariosRenda();
+            } else if (targetPaneId === '#cursos-cert-conteudo') {
+                renderGraficoCertificadosPorCurso();
             }
             // A aba Voluntários já é renderizada no início
         });

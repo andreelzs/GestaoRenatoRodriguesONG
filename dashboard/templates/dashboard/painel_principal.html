@@ -19,6 +19,18 @@
     {{ disp_labels_json|json_script:"disp-labels-data" }}
     {{ disp_datasets_json|json_script:"disp-datasets-data" }}
 
+    {# Novos dados JSON #}
+    {{ prioridade_labels_json|json_script:"prioridade-labels-data" }}
+    {{ prioridade_data_json|json_script:"prioridade-data-data" }}
+    {{ faixa_etaria_labels_json|json_script:"faixa-etaria-labels-data" }}
+    {{ faixa_etaria_data_json|json_script:"faixa-etaria-data-data" }}
+    {{ cidade_labels_json|json_script:"cidade-labels-data" }}
+    {{ cidade_data_json|json_script:"cidade-data-data" }}
+    {{ renda_labels_json|json_script:"renda-labels-data" }}
+    {{ renda_data_json|json_script:"renda-data-data" }}
+    {{ curso_cert_labels_json|json_script:"curso-cert-labels-data" }}
+    {{ curso_cert_data_json|json_script:"curso-cert-data-data" }}
+
     {# Cards com estatísticas rápidas #}
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
@@ -60,27 +72,32 @@
     <!-- Abas de Navegação -->
     <ul class="nav nav-tabs mb-3" id="dashboardAbas" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="voluntarios-aba" data-bs-toggle="tab" data-bs-target="#voluntarios-conteudo" type="button" role="tab" aria-controls="voluntarios-conteudo" aria-selected="true">Voluntários</button>
+            <button class="nav-link {% if aba_atual == 'voluntarios' %}active{% endif %}" id="voluntarios-aba" data-bs-toggle="tab" data-bs-target="#voluntarios-conteudo" type="button" role="tab" aria-controls="voluntarios-conteudo" aria-selected="{% if aba_atual == 'voluntarios' %}true{% else %}false{% endif %}">Voluntários</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tarefas-aba" data-bs-toggle="tab" data-bs-target="#tarefas-conteudo" type="button" role="tab" aria-controls="tarefas-conteudo" aria-selected="false">Tarefas</button>
+            <button class="nav-link {% if aba_atual == 'tarefas' %}active{% endif %}" id="tarefas-aba" data-bs-toggle="tab" data-bs-target="#tarefas-conteudo" type="button" role="tab" aria-controls="tarefas-conteudo" aria-selected="{% if aba_atual == 'tarefas' %}true{% else %}false{% endif %}">Tarefas</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="beneficiarios-aba" data-bs-toggle="tab" data-bs-target="#beneficiarios-conteudo" type="button" role="tab" aria-controls="beneficiarios-conteudo" aria-selected="false">Beneficiários</button>
+            <button class="nav-link {% if aba_atual == 'beneficiarios' %}active{% endif %}" id="beneficiarios-aba" data-bs-toggle="tab" data-bs-target="#beneficiarios-conteudo" type="button" role="tab" aria-controls="beneficiarios-conteudo" aria-selected="{% if aba_atual == 'beneficiarios' %}true{% else %}false{% endif %}">Beneficiários</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if aba_atual == 'cursos-cert' %}active{% endif %}" id="cursos-cert-aba" data-bs-toggle="tab" data-bs-target="#cursos-cert-conteudo" type="button" role="tab" aria-controls="cursos-cert-conteudo" aria-selected="{% if aba_atual == 'cursos-cert' %}true{% else %}false{% endif %}">Cursos e Certificados</button>
         </li>
     </ul>
 
     <!-- Conteúdo das Abas -->
     <div class="tab-content pt-3" id="dashboardAbasConteudo">
         <!-- Aba Voluntários -->
-        <div class="tab-pane fade show active" id="voluntarios-conteudo" role="tabpanel" aria-labelledby="voluntarios-aba" tabindex="0">
+        <div class="tab-pane fade {% if aba_atual == 'voluntarios' %}show active{% endif %}" id="voluntarios-conteudo" role="tabpanel" aria-labelledby="voluntarios-aba" tabindex="0">
             <h3 class="mb-3">Análises de Voluntários</h3>
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="card h-100">
                         <div class="card-header">Status dos Voluntários</div>
                         <div class="card-body d-flex justify-content-center align-items-center p-3">
-                            <canvas id="graficoVoluntariosStatus"></canvas>
+                            <div class="chart-container" style="position: relative; height:280px; width:100%; max-width:350px;">
+                                <canvas id="graficoVoluntariosStatus"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -88,7 +105,7 @@
                     <div class="card h-100">
                         <div class="card-header">Disponibilidade de Voluntários por Dia/Turno</div>
                         <div class="card-body p-3">
-                            <div style="min-height: 300px;"> {# Garante altura mínima para o gráfico de barras #}
+                            <div class="chart-container" style="position: relative; height:320px; width:100%;">
                                 <canvas id="graficoDisponibilidadeVoluntarios"></canvas>
                             </div>
                         </div>
@@ -98,14 +115,26 @@
         </div>
 
         <!-- Aba Tarefas -->
-        <div class="tab-pane fade" id="tarefas-conteudo" role="tabpanel" aria-labelledby="tarefas-aba" tabindex="0">
+        <div class="tab-pane fade {% if aba_atual == 'tarefas' %}show active{% endif %}" id="tarefas-conteudo" role="tabpanel" aria-labelledby="tarefas-aba" tabindex="0">
             <h3 class="mb-3">Análises de Tarefas</h3>
             <div class="row">
                  <div class="col-lg-6 mb-4">
                     <div class="card h-100">
                         <div class="card-header">Tarefas por Status</div>
                         <div class="card-body d-flex justify-content-center align-items-center p-3">
-                            <canvas id="graficoTarefasStatus"></canvas>
+                            <div class="chart-container" style="position: relative; height:280px; width:100%; max-width:350px;">
+                                <canvas id="graficoTarefasStatus"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Tarefas Ativas por Prioridade</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:280px; width:100%; max-width:350px;">
+                                <canvas id="graficoTarefasPrioridade"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -113,14 +142,16 @@
         </div>
 
         <!-- Aba Beneficiários -->
-        <div class="tab-pane fade" id="beneficiarios-conteudo" role="tabpanel" aria-labelledby="beneficiarios-aba" tabindex="0">
+        <div class="tab-pane fade {% if aba_atual == 'beneficiarios' %}show active{% endif %}" id="beneficiarios-conteudo" role="tabpanel" aria-labelledby="beneficiarios-aba" tabindex="0">
             <h3 class="mb-3">Análises de Beneficiários</h3>
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="card h-100">
                         <div class="card-header">Beneficiários por Gênero</div>
                         <div class="card-body d-flex justify-content-center align-items-center p-3">
-                            <canvas id="graficoBeneficiariosGenero"></canvas>
+                            <div class="chart-container" style="position: relative; height:280px; width:100%; max-width:350px;">
+                                <canvas id="graficoBeneficiariosGenero"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -128,12 +159,82 @@
                     <div class="card h-100">
                         <div class="card-header">Beneficiários por Escolaridade</div>
                         <div class="card-body d-flex justify-content-center align-items-center p-3">
-                            <canvas id="graficoBeneficiariosEscolaridade"></canvas>
+                            <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
+                                <canvas id="graficoBeneficiariosEscolaridade"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Beneficiários por Faixa Etária</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
+                                <canvas id="graficoBeneficiariosFaixaEtaria"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Top 10 Cidades de Beneficiários</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
+                                <canvas id="graficoBeneficiariosCidade"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Beneficiários por Renda Familiar</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
+                                <canvas id="graficoBeneficiariosRenda"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Aba Cursos e Certificados -->
+        <div class="tab-pane fade {% if aba_atual == 'cursos-cert' %}show active{% endif %}" id="cursos-cert-conteudo" role="tabpanel" aria-labelledby="cursos-cert-aba" tabindex="0">
+            <h3 class="mb-3">Análises de Cursos e Certificados</h3>
+
+            <form method="get" class="row g-3 mb-4 p-3 border rounded bg-light align-items-end">
+                <input type="hidden" name="aba" value="cursos-cert"> {# Mantém a aba ativa #}
+                <div class="col-md-4">
+                    <label for="cert_data_inicio" class="form-label">Data Início Emissão:</label>
+                    <input type="date" name="cert_data_inicio" id="cert_data_inicio" class="form-control" value="{{ cert_data_inicio_form|default:'' }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="cert_data_fim" class="form-label">Data Fim Emissão:</label>
+                    <input type="date" name="cert_data_fim" id="cert_data_fim" class="form-control" value="{{ cert_data_fim_form|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{% url 'dashboard:painel_principal' %}?aba=cursos-cert" class="btn btn-secondary w-100">Limpar</a>
+                </div>
+            </form>
+
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Certificados Emitidos por Curso {% if cert_data_inicio_form or cert_data_fim_form %}(Período Filtrado){% endif %}</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
+                                <canvas id="graficoCertificadosPorCurso"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {# Futuramente: Gráfico de Certificados Emitidos ao Longo do Tempo com filtro de período #}
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock content %}
