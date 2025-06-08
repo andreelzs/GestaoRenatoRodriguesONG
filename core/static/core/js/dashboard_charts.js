@@ -278,6 +278,22 @@ document.addEventListener('DOMContentLoaded', function () {
         const labels = getJsonFromScriptTag('curso-cert-labels-data');
         const data = getJsonFromScriptTag('curso-cert-data-data');
         if (labels && data && Array.isArray(labels) && Array.isArray(data)) {
+            if (labels.length === 0 && data.length === 0) {
+                console.warn(`Gráfico '${chartId}': Não há dados de certificados para exibir para o período selecionado. Labels e Data estão vazios.`);
+                // Opcionalmente, limpar o canvas e mostrar uma mensagem
+                const canvas = document.getElementById(chartId);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    // ctx.font = "14px Arial";
+                    // ctx.fillStyle = "gray";
+                    // ctx.textAlign = "center";
+                    // ctx.fillText("Nenhum certificado encontrado para o período.", canvas.width / 2, canvas.height / 2);
+                }
+                renderedCharts[chartId] = true; // Marcar como "renderizado" para não tentar de novo
+                return; // Não prosseguir para renderizar com Chart.js se não há dados
+            }
+
             const ctx = document.getElementById(chartId).getContext('2d');
             new Chart(ctx, {
                 type: 'bar',
