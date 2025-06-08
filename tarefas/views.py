@@ -25,8 +25,7 @@ def listar_tarefas(request):
         tarefas = tarefas.filter(voluntario_responsavel_id=filtro_voluntario_id)
     
     # Ordenar por prioridade (maior primeiro), depois por prazo e título
-    tarefas_list = tarefas.order_by('-prioridade', 'data_prevista_conclusao', 'titulo') # Renomeado
-    
+    tarefas_list = tarefas.order_by('-prioridade', 'data_prevista_conclusao', 'titulo') 
     paginator = Paginator(tarefas_list, 10) # 10 tarefas por página
     page_number = request.GET.get('page')
     try:

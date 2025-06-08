@@ -24,7 +24,7 @@
                         {% endif %}
 
                         <div class="mb-3">
-                            <label for="{{ form.curso.id_for_label }}" class="form-label">{{ form.curso.label }}</label>
+                            <label for="{{ form.curso.id_for_label }}" class="form-label">{{ form.curso.label }} <span style="color:red;">*</span></label>
                             {{ form.curso }}
                             {% if form.curso.errors %}
                                 <div class="invalid-feedback d-block">
@@ -36,7 +36,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="{{ form.data_conclusao.id_for_label }}" class="form-label">{{ form.data_conclusao.label }}</label>
+                            <label for="{{ form.data_conclusao.id_for_label }}" class="form-label">{{ form.data_conclusao.label }} <span style="color:red;">*</span></label>
                             {{ form.data_conclusao }}
                             {% if form.data_conclusao.errors %}
                                 <div class="invalid-feedback d-block">
@@ -72,9 +72,15 @@
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="{% url 'beneficiarios:detalhar_beneficiario' beneficiario_id=beneficiario.id %}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-1"></i> Voltar para Detalhes
-                            </a>
+                            {% if certificado %} {# Modo de Edição - 'certificado' é passado pela view editar_certificado_beneficiario #}
+                                <a href="{% url 'cursos:listar_solicitacoes_certificado' %}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> Voltar para Solicitações
+                                </a>
+                            {% else %} {# Modo de Adição - 'certificado' não existe no contexto da view adicionar_certificado_beneficiario #}
+                                <a href="{% url 'cursos:listar_cursos_ong' %}?aba_ativa_cursos=gerar-certificado" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> Voltar para Busca de Beneficiário
+                                </a>
+                            {% endif %}
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-1"></i> Salvar Certificado
                             </button>
@@ -86,3 +92,19 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'cursos/js/certificado_form_utils.js' %}" defer></script> {# Caminho corrigido de volta para 'cursos' #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Passa os IDs dos elementos e o texto original do label para a função no arquivo JS
+    // O texto original do label é importante para restaurá-lo corretamente.
+    setupCertificadoFormDynamicLabel(
+        '{{ form.certificado_recebido.id_for_label }}',
+        '{{ form.data_emissao_certificado.id_for_label }}',
+        "{{ form.data_emissao_certificado.label }}" // Passa o label original como string
+    );
+});
+</script>
+{% endblock scripts %}

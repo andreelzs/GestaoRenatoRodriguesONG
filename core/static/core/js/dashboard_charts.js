@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
         try {
-            // O conteúdo já é JSON, não precisa de duplo parse se estiver correto no template
             return JSON.parse(scriptTag.textContent);
         } catch (e) {
             console.error(`Erro durante o parseamento JSON do script tag #${scriptTagId}:`, scriptTag.textContent, e);

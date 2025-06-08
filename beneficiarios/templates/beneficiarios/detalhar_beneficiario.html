@@ -92,11 +92,6 @@
             </dl>
             <hr>
             <h4 class="card-title">Cursos Concluídos e Certificados</h4>
-            <div class="mb-3">
-                <a href="{% url 'cursos:adicionar_certificado_beneficiario' beneficiario_id=beneficiario.id %}" class="btn btn-success btn-sm">
-                    <i class="fas fa-plus-circle me-1"></i> Adicionar Certificado de Curso
-                </a>
-            </div>
             {% if certificados %}
             <div class="table-responsive">
                 <table class="table table-striped table-hover table-bordered">
@@ -106,7 +101,6 @@
                             <th>Data de Conclusão</th>
                             <th>Data Emissão Cert.</th>
                             <th>Certificado Recebido</th>
-                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,14 +110,6 @@
                             <td>{{ certificado.data_conclusao|date:"d/m/Y" }}</td>
                             <td>{{ certificado.data_emissao_certificado|date:"d/m/Y"|default:"-" }}</td>
                             <td>{% if certificado.certificado_recebido %}<i class="fas fa-check-circle text-success"></i> Sim{% else %}<i class="fas fa-times-circle text-danger"></i> Não{% endif %}</td>
-                            <td>
-                                <a href="{% url 'cursos:editar_certificado_beneficiario' certificado_id=certificado.id %}" class="btn btn-primary btn-sm me-1" title="Editar Certificado">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'cursos:excluir_certificado_beneficiario' certificado_id=certificado.id %}" class="btn btn-danger btn-sm" title="Excluir Certificado">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

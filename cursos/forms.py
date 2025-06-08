@@ -14,19 +14,37 @@ class CertificadoForm(forms.ModelForm):
         model = Certificado
         fields = ['curso', 'data_conclusao', 'data_emissao_certificado', 'certificado_recebido']
         widgets = {
-            'data_conclusao': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'data_emissao_certificado': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'data_conclusao': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+            'data_emissao_certificado': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
             'certificado_recebido': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         labels = {
-            'data_conclusao': "Data de Conclusão",
-            'data_emissao_certificado': "Data de Emissão do Certificado (Opcional)",
+            'curso': "Curso", # HTML removido
+            'data_conclusao': "Data de Conclusão", # HTML removido
+            'data_emissao_certificado': "Data de Emissão do Certificado (Opcional)", # Será tratado por JS
             'certificado_recebido': "Certificado Físico Recebido pelo Beneficiário",
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['data_emissao_certificado'].required = False # Tornar opcional explicitamente
+
+    def clean(self):
+        cleaned_data = super().clean()
+        certificado_recebido = cleaned_data.get('certificado_recebido')
+        data_emissao_certificado = cleaned_data.get('data_emissao_certificado')
+
+        if certificado_recebido and not data_emissao_certificado:
+            # A mensagem de erro será associada ao campo 'data_emissao_certificado'
+            self.add_error('data_emissao_certificado', 
+                           forms.ValidationError("A data de emissão do certificado é obrigatória se o certificado foi marcado como recebido."))
+        
+        # Se 'certificado_recebido' for True, então 'data_emissao_certificado' deve ser obrigatório.
+        # Podemos também ajustar o atributo 'required' do campo dinamicamente aqui,
+        # mas a validação com add_error já impede o formulário de ser válido.
+        # Para o JavaScript no frontend, ele manipulará o visual (asterisco).
+        
+        return cleaned_data
 
 
 class CursoForm(forms.ModelForm):
