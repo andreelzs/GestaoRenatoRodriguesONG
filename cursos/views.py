@@ -215,8 +215,26 @@ class CertificadoListView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(beneficiario__nome_completo__icontains=filtro_beneficiario)
         if filtro_recebido is not None and filtro_recebido != '':
             queryset = queryset.filter(certificado_recebido=(filtro_recebido == 'true'))
+
+        # Ordenação
+        ordenar_por_data_conclusao = self.request.GET.get('ordenar_por_data_conclusao')
+        ordenar_por_data_emissao = self.request.GET.get('ordenar_por_data_emissao')
+
+        if ordenar_por_data_conclusao:
+            if ordenar_por_data_conclusao == 'asc':
+                queryset = queryset.order_by('data_conclusao', 'beneficiario__nome_completo')
+            elif ordenar_por_data_conclusao == 'desc':
+                queryset = queryset.order_by('-data_conclusao', 'beneficiario__nome_completo')
+        elif ordenar_por_data_emissao:
+            if ordenar_por_data_emissao == 'asc':
+                queryset = queryset.order_by('data_emissao_certificado', 'beneficiario__nome_completo')
+            elif ordenar_por_data_emissao == 'desc':
+                queryset = queryset.order_by('-data_emissao_certificado', 'beneficiario__nome_completo')
+        else:
+            # Ordenação padrão
+            queryset = queryset.order_by('-data_conclusao', 'beneficiario__nome_completo')
             
-        return queryset.order_by('-data_conclusao', 'beneficiario__nome_completo')
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -227,8 +245,11 @@ class CertificadoListView(LoginRequiredMixin, ListView):
         context['filtro_curso_atual'] = self.request.GET.get('filtro_curso', '')
         context['filtro_beneficiario_nome_atual'] = self.request.GET.get('filtro_beneficiario_nome', '')
         context['filtro_recebido_atual'] = self.request.GET.get('filtro_recebido', '')
+
+        # Parâmetros de ordenação para o contexto
+        context['ordenacao_data_conclusao_atual'] = self.request.GET.get('ordenar_por_data_conclusao')
+        context['ordenacao_data_emissao_atual'] = self.request.GET.get('ordenar_por_data_emissao')
         
-        # Para a navegação por abas (se este template for renderizado dentro de uma estrutura de abas maior)
-        # Ou se esta view renderizar seu próprio conjunto de abas (se necessário no futuro)
+        # Para a navegação por abas
         context['aba_ativa_cursos'] = 'solicitacoes-certificado' 
         return context

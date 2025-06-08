@@ -145,54 +145,35 @@ a:hover, a:focus {
 
 /* Estilizando os links da navbar customizada */
 .navbar-custom .nav-link {
-    color: var(--cor-texto-sobre-primaria); /* Garante bom contraste com o fundo --cor-primaria-ong */
-    padding: 0.5rem 1rem; /* Aumenta a área de clique e respiro */
-    margin: 0 0.25rem; /* Pequeno espaçamento entre os links */
-    border: 2px solid transparent; /* Borda transparente para manter o layout no hover */
-    border-radius: 0.375rem; /* Cantos arredondados (padrão Bootstrap para botões) */
-    font-weight: 500; /* Texto um pouco mais forte para legibilidade */
-    transition: all 0.3s ease-in-out; /* Transição suave para todos os efeitos */
+    color: var(--cor-texto-sobre-primaria); 
+    padding: 0.5rem 1rem; 
+    margin: 0 0.25rem; 
+    border: 2px solid transparent; 
+    border-radius: 0.375rem; 
+    font-weight: 500;
+    transition: all 0.3s ease-in-out; 
 }
 
 /* Efeito Hover para os links da navbar */
 .navbar-custom .nav-link:hover,
 .navbar-custom .nav-link:focus { /* :focus para acessibilidade */
-    color: var(--cor-destaque-ong); /* Muda a cor do texto para o verde mais claro no hover */
-    background-color: rgba(255, 255, 255, 0.1); /* Fundo levemente branco e transparente */
-    border-color: var(--cor-secundaria-ong); /* Moldura com o verde secundário */
-    text-decoration: none; /* Remove sublinhado padrão do link no hover, se houver */
-    transform: translateY(-2px); /* Leve animação de elevação */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    color: var(--cor-destaque-ong);
+    background-color: rgba(255, 255, 255, 0.1); 
+    border-color: var(--cor-secundaria-ong); 
+    text-decoration: none;
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Estilo para o link ativo (página atual) */
 .navbar-custom .nav-link.active {
     color: var(--cor-destaque-ong);
     font-weight: bold;
-    border-bottom: 2px solid var(--cor-destaque-ong); /* Apenas uma borda inferior para o ativo */
-    border-top-color: transparent; /* Garante que outras bordas não apareçam para o ativo */
+    border-bottom: 2px solid var(--cor-destaque-ong); 
+    border-top-color: transparent; 
     border-left-color: transparent;
     border-right-color: transparent;
-    background-color: transparent; /* Remove o fundo do hover para o ativo */
-    box-shadow: none; /* Remove sombra para o ativo */
-    transform: none; /* Remove elevação para o ativo */
-}
-
-/* Ajuste específico para o botão "Sair" ou "Entrar" para dar mais destaque */
-.navbar-custom .nav-item:last-child .nav-link {
-    /* Se quiser um destaque diferente para o último item (Entrar/Sair) */
-    /* Exemplo:
-    background-color: var(--cor-secundaria-ong);
-    color: var(--cor-texto-sobre-secundaria);
-    border-color: var(--cor-secundaria-ong);
-    */
-}
-
-.navbar-custom .nav-item:last-child .nav-link:hover,
-.navbar-custom .nav-item:last-child .nav-link:focus {
-    /* Exemplo de hover para o último item:
-    background-color: var(--cor-destaque-ong);
-    color: var(--cor-texto-sobre-destaque);
-    border-color: var(--cor-destaque-ong);
-    */
+    background-color: transparent; 
+    box-shadow: none; 
+    transform: none;
 }

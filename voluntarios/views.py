@@ -27,12 +27,13 @@ def listar_voluntarios(request):
     return render(request, 'voluntarios/listar_voluntarios.html', contexto)
 
 @login_required
+@admin_required # Restringir cadastro a admins
 def cadastrar_voluntario(request):
     if request.method == 'POST':
-        form = FormularioVoluntario(request.POST)
+        form = FormularioVoluntario(request.POST, user=request.user) # Passar user
         if form.is_valid():
             try:
-                form.save() # O método save do formulário lida com a criação do usuário
+                form.save() 
                 messages.success(request, 'Voluntário cadastrado com sucesso!')
                 return redirect('voluntarios:listar_voluntarios')
             except Exception as e:
@@ -41,7 +42,7 @@ def cadastrar_voluntario(request):
             # Se o formulário não for válido, exibe mensagens de erro já tratadas no formulário
             pass 
     else:
-        form = FormularioVoluntario()
+        form = FormularioVoluntario(user=request.user) # Passar user
     
     contexto = {
         'form': form,
@@ -62,8 +63,23 @@ def detalhar_voluntario(request, voluntario_id):
 @login_required
 def editar_voluntario(request, voluntario_id):
     voluntario = get_object_or_404(Voluntario, pk=voluntario_id)
+    
+    # Restrição: Voluntário só pode editar o próprio perfil.
+    # Admins podem editar qualquer um.
+    if hasattr(request.user, 'tipo_usuario') and request.user.tipo_usuario == 'VOLUNT':
+        # Verifica se o voluntário logado é o mesmo que está sendo editado
+        if not (hasattr(voluntario, 'usuario') and voluntario.usuario == request.user):
+            messages.error(request, "Você só tem permissão para editar seu próprio perfil.")
+            # Tenta redirecionar para o perfil do próprio usuário logado, se ele tiver um.
+            # Caso contrário, para a lista de voluntários.
+            if hasattr(request.user, 'voluntario') and request.user.voluntario:
+                 return redirect('voluntarios:detalhar_voluntario', voluntario_id=request.user.voluntario.id)
+            else:
+                 return redirect('voluntarios:listar_voluntarios')
+
+
     if request.method == 'POST':
-        form = FormularioVoluntario(request.POST, instance=voluntario)
+        form = FormularioVoluntario(request.POST, instance=voluntario, user=request.user) # Passar user
         if form.is_valid():
             try:
                 form.save()
@@ -72,7 +88,7 @@ def editar_voluntario(request, voluntario_id):
             except Exception as e:
                 messages.error(request, f'Ocorreu um erro ao atualizar o voluntário: {e}')
     else:
-        form = FormularioVoluntario(instance=voluntario)
+        form = FormularioVoluntario(instance=voluntario, user=request.user) # Passar user
         # Se o voluntário tem um usuário associado, preenche os campos de usuário no formulário
 
     contexto = {
@@ -127,11 +143,6 @@ def reativar_voluntario(request, voluntario_id):
         # ou para a lista de ativos para vê-lo lá.
         return redirect('voluntarios:listar_voluntarios') # Por padrão, vai para ativos. Pode adicionar ?filtro_ativo=inativos se preferir
     
-    # Se não for POST, pode mostrar uma página de confirmação (opcional)
-    # ou simplesmente redirecionar se a intenção é que o link GET já reative (menos seguro)
-    # Para este exemplo, vamos assumir que o botão "Reativar" no template fará um POST
-    # ou que um GET é aceitável para esta ação (mais simples de implementar no template inicialmente)
-    # Se for GET direto:
     try:
         voluntario.ativo = True
         voluntario.data_inativacao = None

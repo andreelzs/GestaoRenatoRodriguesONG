@@ -6,9 +6,11 @@
 <div class="container mt-4">
     <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center mb-3">
         <h1 class="mb-2 mb-md-0">{{ titulo_pagina }}</h1>
+        {% if request.user.tipo_usuario == 'ADMIN' %}
         <a href="{% url 'voluntarios:cadastrar_voluntario' %}" class="btn btn-success align-self-start align-self-md-auto">
             <i class="fas fa-plus"></i> Adicionar Novo Voluntário
         </a>
+        {% endif %}
     </div>
 
     <ul class="nav nav-tabs mb-3">
@@ -48,9 +50,11 @@
                         <td>{{ voluntario.usuario.email|default:"Não informado" }}</td>
                         <td>
                             <div class="d-flex flex-column flex-md-row">
+                                {% if request.user.tipo_usuario == 'ADMIN' or request.user.tipo_usuario == 'VOLUNT' and request.user.voluntario and request.user.voluntario.id == voluntario.id %}
                                 <a href="{% url 'voluntarios:editar_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-primary mb-1 mb-md-0 me-md-1" title="Editar">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
+                                {% endif %}
                                 {% if request.user.tipo_usuario == 'ADMIN' %}
                                     {% if voluntario.ativo %}
                                     <a href="{% url 'voluntarios:excluir_voluntario' voluntario.id %}" class="btn btn-sm btn-outline-danger" title="Inativar">

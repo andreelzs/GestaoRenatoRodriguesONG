@@ -40,7 +40,10 @@ class FormularioVoluntario(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        # Extrair o usuário da requisição, se passado pela view
+        self.request_user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        
         # Se estiver editando um voluntário existente, podemos preencher os campos do usuário
         if self.instance and self.instance.pk and hasattr(self.instance, 'usuario'):
             self.fields['username'].initial = self.instance.usuario.username
@@ -53,9 +56,6 @@ class FormularioVoluntario(forms.ModelForm):
         # Adicionar classes do Bootstrap aos campos
         for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.RadioSelect):
-                # RadioSelect é renderizado de forma especial no template, não aplicar form-control ao widget principal.
-                # Os inputs individuais dentro dele podem precisar de form-check-input,
-                # mas isso é melhor tratado no loop de renderização do template.
                 pass
             elif isinstance(field.widget, forms.CheckboxInput):
                 # Para checkboxes individuais (não parte de um CheckboxSelectMultiple)
@@ -70,18 +70,25 @@ class FormularioVoluntario(forms.ModelForm):
         if 'rg' in self.fields:
             self.fields['rg'].widget.attrs.update({
                 'placeholder': 'Ex: 12.345.678-9',
-                'maxlength': '12' # Para acomodar a máscara XX.XXX.XXX-Y
+                'maxlength': '12' 
             })
         if 'cpf' in self.fields:
             self.fields['cpf'].widget.attrs.update({
                 'placeholder': 'Ex: 123.456.789-00',
-                'maxlength': '14' # Para acomodar a máscara XXX.XXX.XXX-XX
+                'maxlength': '14' 
             })
         if 'telefone' in self.fields:
             self.fields['telefone'].widget.attrs.update({
                 'placeholder': 'Ex: (21) 99999-9999',
-                'maxlength': '15' # Para acomodar a máscara (XX) XXXXX-XXXX
+                'maxlength': '15' 
             })
+        
+        # Restringir edição do tipo de conta para voluntários editando o próprio perfil
+        if self.request_user and self.request_user.is_authenticated and \
+           hasattr(self.request_user, 'tipo_usuario') and self.request_user.tipo_usuario == 'VOLUNT' and \
+           self.instance and hasattr(self.instance, 'usuario') and self.instance.usuario == self.request_user:
+            if 'tipo_conta_usuario' in self.fields:
+                self.fields['tipo_conta_usuario'].disabled = True
 
     def clean_rg(self):
         rg = self.cleaned_data.get('rg')

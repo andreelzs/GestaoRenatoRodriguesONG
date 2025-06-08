@@ -12,22 +12,35 @@
     {{ status_data_json|json_script:"status-data-data" }}
     {{ voluntario_status_labels_json|json_script:"voluntario-status-labels-data" }}
     {{ voluntario_status_data_json|json_script:"voluntario-status-data-data" }}
-    {{ genero_labels_json|json_script:"genero-labels-data" }}
-    {{ genero_data_json|json_script:"genero-data-data" }}
-    {{ escolaridade_labels_json|json_script:"escolaridade-labels-data" }}
-    {{ escolaridade_data_json|json_script:"escolaridade-data-data" }}
+    
+    {# Beneficiários Ativos #}
+    {{ genero_labels_ativos_json|json_script:"genero-labels-ativos-data" }}
+    {{ genero_data_ativos_json|json_script:"genero-data-ativos-data" }}
+    {{ escolaridade_labels_ativos_json|json_script:"escolaridade-labels-ativos-data" }}
+    {{ escolaridade_data_ativos_json|json_script:"escolaridade-data-ativos-data" }}
+    {{ faixa_etaria_labels_ativos_json|json_script:"faixa-etaria-labels-ativos-data" }}
+    {{ faixa_etaria_data_ativos_json|json_script:"faixa-etaria-data-ativos-data" }}
+    {{ cidade_labels_ativos_json|json_script:"cidade-labels-ativos-data" }}
+    {{ cidade_data_ativos_json|json_script:"cidade-data-ativos-data" }}
+    {{ renda_labels_ativos_json|json_script:"renda-labels-ativos-data" }}
+    {{ renda_data_ativos_json|json_script:"renda-data-ativos-data" }}
+
+    {# Todos os Beneficiários #}
+    {{ genero_labels_todos_json|json_script:"genero-labels-todos-data" }}
+    {{ genero_data_todos_json|json_script:"genero-data-todos-data" }}
+    {{ escolaridade_labels_todos_json|json_script:"escolaridade-labels-todos-data" }}
+    {{ escolaridade_data_todos_json|json_script:"escolaridade-data-todos-data" }}
+    {{ faixa_etaria_labels_todos_json|json_script:"faixa-etaria-labels-todos-data" }}
+    {{ faixa_etaria_data_todos_json|json_script:"faixa-etaria-data-todos-data" }}
+    {{ cidade_labels_todos_json|json_script:"cidade-labels-todos-data" }}
+    {{ cidade_data_todos_json|json_script:"cidade-data-todos-data" }}
+    {{ renda_labels_todos_json|json_script:"renda-labels-todos-data" }}
+    {{ renda_data_todos_json|json_script:"renda-data-todos-data" }}
+
     {{ disp_labels_json|json_script:"disp-labels-data" }}
     {{ disp_datasets_json|json_script:"disp-datasets-data" }}
-
-    {# Novos dados JSON #}
     {{ prioridade_labels_json|json_script:"prioridade-labels-data" }}
     {{ prioridade_data_json|json_script:"prioridade-data-data" }}
-    {{ faixa_etaria_labels_json|json_script:"faixa-etaria-labels-data" }}
-    {{ faixa_etaria_data_json|json_script:"faixa-etaria-data-data" }}
-    {{ cidade_labels_json|json_script:"cidade-labels-data" }}
-    {{ cidade_data_json|json_script:"cidade-data-data" }}
-    {{ renda_labels_json|json_script:"renda-labels-data" }}
-    {{ renda_data_json|json_script:"renda-data-data" }}
     {{ curso_cert_labels_json|json_script:"curso-cert-labels-data" }}
     {{ curso_cert_data_json|json_script:"curso-cert-data-data" }}
 
@@ -35,7 +48,7 @@
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card text-white bg-primary h-100">
-                <div class="card-header">Total de Voluntários</div>
+                <div class="card-header">Voluntários Ativos</div>
                 <div class="card-body">
                     <h4 class="card-title">{{ total_voluntarios }}</h4>
                 </div>
@@ -43,7 +56,7 @@
         </div>
         <div class="col-md-3 mb-3">
             <div class="card text-white bg-success h-100">
-                <div class="card-header">Total de Beneficiários</div>
+                <div class="card-header">Beneficiários Ativos</div>
                 <div class="card-body">
                     <h4 class="card-title">{{ total_beneficiarios }}</h4>
                 </div>
@@ -59,7 +72,7 @@
         </div>
         <div class="col-md-3 mb-3">
             <div class="card text-dark bg-info h-100">
-                <div class="card-header">Tarefas Concluídas</div>
+                <div class="card-header">Tarefas Concluídas no Último Mês</div>
                 <div class="card-body">
                     <h4 class="card-title">{{ total_tarefas_concluidas }}</h4>
                 </div>
@@ -78,7 +91,10 @@
             <button class="nav-link {% if aba_atual == 'tarefas' %}active{% endif %}" id="tarefas-aba" data-bs-toggle="tab" data-bs-target="#tarefas-conteudo" type="button" role="tab" aria-controls="tarefas-conteudo" aria-selected="{% if aba_atual == 'tarefas' %}true{% else %}false{% endif %}">Tarefas</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link {% if aba_atual == 'beneficiarios' %}active{% endif %}" id="beneficiarios-aba" data-bs-toggle="tab" data-bs-target="#beneficiarios-conteudo" type="button" role="tab" aria-controls="beneficiarios-conteudo" aria-selected="{% if aba_atual == 'beneficiarios' %}true{% else %}false{% endif %}">Beneficiários</button>
+            <button class="nav-link {% if aba_atual == 'beneficiarios_ativos' or aba_atual == 'beneficiarios' %}active{% endif %}" id="beneficiarios-ativos-aba" data-bs-toggle="tab" data-bs-target="#beneficiarios-ativos-conteudo" type="button" role="tab" aria-controls="beneficiarios-ativos-conteudo" aria-selected="{% if aba_atual == 'beneficiarios_ativos' or aba_atual == 'beneficiarios' %}true{% else %}false{% endif %}">Beneficiários Ativos</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if aba_atual == 'beneficiarios_todos' %}active{% endif %}" id="beneficiarios-todos-aba" data-bs-toggle="tab" data-bs-target="#beneficiarios-todos-conteudo" type="button" role="tab" aria-controls="beneficiarios-todos-conteudo" aria-selected="{% if aba_atual == 'beneficiarios_todos' %}true{% else %}false{% endif %}">Todos os Beneficiários</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link {% if aba_atual == 'cursos-cert' %}active{% endif %}" id="cursos-cert-aba" data-bs-toggle="tab" data-bs-target="#cursos-cert-conteudo" type="button" role="tab" aria-controls="cursos-cert-conteudo" aria-selected="{% if aba_atual == 'cursos-cert' %}true{% else %}false{% endif %}">Cursos e Certificados</button>
@@ -141,56 +157,113 @@
             </div>
         </div>
 
-        <!-- Aba Beneficiários -->
-        <div class="tab-pane fade {% if aba_atual == 'beneficiarios' %}show active{% endif %}" id="beneficiarios-conteudo" role="tabpanel" aria-labelledby="beneficiarios-aba" tabindex="0">
-            <h3 class="mb-3">Análises de Beneficiários</h3>
+        <!-- Aba Beneficiários Ativos -->
+        <div class="tab-pane fade {% if aba_atual == 'beneficiarios_ativos' or aba_atual == 'beneficiarios' %}show active{% endif %}" id="beneficiarios-ativos-conteudo" role="tabpanel" aria-labelledby="beneficiarios-ativos-aba" tabindex="0">
+            <h3 class="mb-3">Análises de Beneficiários Ativos</h3>
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="card h-100">
-                        <div class="card-header">Beneficiários por Gênero</div>
+                        <div class="card-header">Beneficiários Ativos por Gênero</div>
                         <div class="card-body d-flex justify-content-center align-items-center p-3">
                             <div class="chart-container" style="position: relative; height:280px; width:100%; max-width:350px;">
-                                <canvas id="graficoBeneficiariosGenero"></canvas>
+                                <canvas id="graficoBeneficiariosGeneroAtivos"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="card h-100">
-                        <div class="card-header">Beneficiários por Escolaridade</div>
+                        <div class="card-header">Beneficiários Ativos por Escolaridade</div>
                         <div class="card-body d-flex justify-content-center align-items-center p-3">
                             <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
-                                <canvas id="graficoBeneficiariosEscolaridade"></canvas>
+                                <canvas id="graficoBeneficiariosEscolaridadeAtivos"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="card h-100">
-                        <div class="card-header">Beneficiários por Faixa Etária</div>
+                        <div class="card-header">Beneficiários Ativos por Faixa Etária</div>
                         <div class="card-body d-flex justify-content-center align-items-center p-3">
                             <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
-                                <canvas id="graficoBeneficiariosFaixaEtaria"></canvas>
+                                <canvas id="graficoBeneficiariosFaixaEtariaAtivos"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="card h-100">
-                        <div class="card-header">Top 10 Cidades de Beneficiários</div>
+                        <div class="card-header">Top 10 Cidades de Beneficiários Ativos</div>
                         <div class="card-body d-flex justify-content-center align-items-center p-3">
                             <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
-                                <canvas id="graficoBeneficiariosCidade"></canvas>
+                                <canvas id="graficoBeneficiariosCidadeAtivos"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
                  <div class="col-lg-6 mb-4">
                     <div class="card h-100">
-                        <div class="card-header">Beneficiários por Renda Familiar</div>
+                        <div class="card-header">Beneficiários Ativos por Renda Familiar</div>
                         <div class="card-body d-flex justify-content-center align-items-center p-3">
                             <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
-                                <canvas id="graficoBeneficiariosRenda"></canvas>
+                                <canvas id="graficoBeneficiariosRendaAtivos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba Todos os Beneficiários -->
+        <div class="tab-pane fade {% if aba_atual == 'beneficiarios_todos' %}show active{% endif %}" id="beneficiarios-todos-conteudo" role="tabpanel" aria-labelledby="beneficiarios-todos-aba" tabindex="0">
+            <h3 class="mb-3">Análises de Todos os Beneficiários</h3>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Todos os Beneficiários por Gênero</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:280px; width:100%; max-width:350px;">
+                                <canvas id="graficoBeneficiariosGeneroTodos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Todos os Beneficiários por Escolaridade</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
+                                <canvas id="graficoBeneficiariosEscolaridadeTodos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Todos os Beneficiários por Faixa Etária</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
+                                <canvas id="graficoBeneficiariosFaixaEtariaTodos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Top 10 Cidades (Todos os Beneficiários)</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
+                                <canvas id="graficoBeneficiariosCidadeTodos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">Todos os Beneficiários por Renda Familiar</div>
+                        <div class="card-body d-flex justify-content-center align-items-center p-3">
+                            <div class="chart-container" style="position: relative; height:300px; width:100%; max-width:450px;">
+                                <canvas id="graficoBeneficiariosRendaTodos"></canvas>
                             </div>
                         </div>
                     </div>

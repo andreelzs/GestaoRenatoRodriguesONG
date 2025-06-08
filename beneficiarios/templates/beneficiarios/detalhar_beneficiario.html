@@ -5,12 +5,14 @@
 {% block content %}
 <div class="container mt-4">
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex justify-content-between align-items-center">
             <h1 class="mb-0">{{ titulo_pagina }}</h1>
             <div>
+                {% if request.user.tipo_usuario != 'VOLUNT' %}
                 <a href="{% url 'beneficiarios:editar_beneficiario' beneficiario.id %}" class="btn btn-primary me-2">
                     <i class="fas fa-edit"></i> Editar Beneficiário
                 </a>
+                {% endif %}
                 <a href="{% url 'beneficiarios:listar_beneficiarios' %}" class="btn btn-secondary">
                     <i class="fas fa-list"></i> Voltar para Lista
                 </a>
@@ -122,22 +124,26 @@
             {% endif %}
         </div>
         <div class="card-footer text-muted">
-            {% if beneficiario.ativo %}
-                <a href="{% url 'beneficiarios:excluir_beneficiario' beneficiario.id %}" class="btn btn-warning"> 
-                    <i class="fas fa-user-times"></i> Inativar Beneficiário
-                </a>
-            {% else %}
-                <form action="{% url 'beneficiarios:reativar_beneficiario' beneficiario.id %}" method="post" style="display: inline;" class="me-1">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-success" title="Reativar">
-                        <i class="fas fa-user-check"></i> Reativar Beneficiário
-                    </button>
-                </form>
-                {% if request.user.tipo_usuario == 'ADMIN' %}
-                <a href="{% url 'beneficiarios:excluir_permanente_beneficiario' beneficiario.id %}" class="btn btn-danger ms-2" title="Excluir Permanentemente">
-                    <i class="fas fa-trash-alt"></i> Excluir Permanentemente
-                </a>
+            {% if request.user.tipo_usuario != 'VOLUNT' %}
+                {% if beneficiario.ativo %}
+                    <a href="{% url 'beneficiarios:excluir_beneficiario' beneficiario.id %}" class="btn btn-warning"> 
+                        <i class="fas fa-user-times"></i> Inativar Beneficiário
+                    </a>
+                {% else %}
+                    <form action="{% url 'beneficiarios:reativar_beneficiario' beneficiario.id %}" method="post" style="display: inline;" class="me-1">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success" title="Reativar">
+                            <i class="fas fa-user-check"></i> Reativar Beneficiário
+                        </button>
+                    </form>
+                    {% if request.user.tipo_usuario == 'ADMIN' %}
+                    <a href="{% url 'beneficiarios:excluir_permanente_beneficiario' beneficiario.id %}" class="btn btn-danger ms-2" title="Excluir Permanentemente">
+                        <i class="fas fa-trash-alt"></i> Excluir Permanentemente
+                    </a>
+                    {% endif %}
                 {% endif %}
+            {% else %}
+                <p class="mb-0">Ações de modificação de status não disponíveis para seu tipo de usuário.</p>
             {% endif %}
         </div>
     </div>

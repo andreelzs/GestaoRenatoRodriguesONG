@@ -80,6 +80,9 @@ def detalhar_beneficiario(request, beneficiario_id):
 
 @login_required
 def editar_beneficiario(request, beneficiario_id):
+    if hasattr(request.user, 'tipo_usuario') and request.user.tipo_usuario == 'VOLUNT':
+        messages.error(request, "Você não tem permissão para editar beneficiários.")
+        return redirect('beneficiarios:listar_beneficiarios')
     beneficiario = get_object_or_404(Beneficiario, pk=beneficiario_id)
     if request.method == 'POST':
         form = FormularioBeneficiario(request.POST, instance=beneficiario)
@@ -101,7 +104,10 @@ def editar_beneficiario(request, beneficiario_id):
     return render(request, 'beneficiarios/formulario_beneficiario.html', contexto)
 
 @login_required
-def excluir_beneficiario(request, beneficiario_id):
+def excluir_beneficiario(request, beneficiario_id): # Inativação
+    if hasattr(request.user, 'tipo_usuario') and request.user.tipo_usuario == 'VOLUNT':
+        messages.error(request, "Você não tem permissão para inativar beneficiários.")
+        return redirect('beneficiarios:listar_beneficiarios')
     beneficiario = get_object_or_404(Beneficiario, pk=beneficiario_id)
     if request.method == 'POST':
         try:
@@ -121,6 +127,17 @@ def excluir_beneficiario(request, beneficiario_id):
 
 @login_required
 def reativar_beneficiario(request, beneficiario_id):
+    if hasattr(request.user, 'tipo_usuario') and request.user.tipo_usuario == 'VOLUNT':
+        messages.error(request, "Você não tem permissão para reativar beneficiários.")
+        # Tenta redirecionar para a página de detalhes do beneficiário se possível, ou lista
+        try:
+            # Tenta obter o beneficiário para redirecionar para sua página de detalhes
+            # Isso pode ser redundante se o ID for sempre válido, mas é uma segurança.
+            beneficiario_obj = get_object_or_404(Beneficiario, pk=beneficiario_id)
+            return redirect('beneficiarios:detalhar_beneficiario', beneficiario_id=beneficiario_obj.id)
+        except:
+            return redirect('beneficiarios:listar_beneficiarios')
+
     beneficiario = get_object_or_404(Beneficiario, pk=beneficiario_id)
 
     try:

@@ -79,7 +79,7 @@ def listar_tarefas(request):
 @login_required
 def cadastrar_tarefa(request):
     if request.method == 'POST':
-        form = FormularioTarefa(request.POST)
+        form = FormularioTarefa(request.POST, user=request.user) # Passar user
         if form.is_valid():
             try:
                 tarefa = form.save(commit=False)
@@ -93,7 +93,7 @@ def cadastrar_tarefa(request):
             except Exception as e:
                 messages.error(request, f'Ocorreu um erro ao cadastrar a tarefa: {e}')
     else:
-        form = FormularioTarefa()
+        form = FormularioTarefa(user=request.user) # Passar user
     
     contexto = {
         'form': form,
@@ -114,7 +114,7 @@ def detalhar_tarefa(request, tarefa_id):
 def editar_tarefa(request, tarefa_id):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_id)
     if request.method == 'POST':
-        form = FormularioTarefa(request.POST, instance=tarefa)
+        form = FormularioTarefa(request.POST, instance=tarefa, user=request.user) # Passar user
         if form.is_valid():
             try:
                 tarefa_editada = form.save(commit=False)
@@ -131,7 +131,7 @@ def editar_tarefa(request, tarefa_id):
             except Exception as e:
                 messages.error(request, f'Ocorreu um erro ao atualizar a tarefa: {e}')
     else:
-        form = FormularioTarefa(instance=tarefa)
+        form = FormularioTarefa(instance=tarefa, user=request.user) # Passar user
     
     contexto = {
         'form': form,
