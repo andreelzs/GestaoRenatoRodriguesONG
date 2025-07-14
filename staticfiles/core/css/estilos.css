@@ -178,13 +178,3 @@ a:hover, a:focus {
     transform: none;
 }
 
-/* Plano de fundo para telas de desktop */
-@media (min-width: 1024px) {
-  body {
-    background-image: url('../img/bg_pc.jpg');
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-  }
-}
