@@ -32,8 +32,7 @@ DEV_SECRET_KEY = 'django-insecure-h8qm#-3#9&j%+4hi9mxo$%j)b6c%_fdfe9%lih79$a^m&o
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', DEV_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG is True unless DJANGO_DEBUG is set to 'False'
-DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() != 'false'
+DEBUG = False
 
 # Base ALLOWED_HOSTS for production and development
 # ATENÇÃO: A LINHA ABAIXO É APENAS PARA DIAGNÓSTICO E É INSEGURA PARA PRODUÇÃO!
