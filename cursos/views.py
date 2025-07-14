@@ -65,7 +65,7 @@ def excluir_certificado_beneficiario(request, certificado_id):
     if request.method == 'POST':
         certificado.delete()
         messages.success(request, f"Certificado do curso '{nome_curso}' para {nome_beneficiario} foi excluído.")
-        return redirect('beneficiarios:detalhar_beneficiario', pk=beneficiario_id)
+        return redirect('cursos:listar_solicitacoes_certificado')
 
     context = {
         'certificado': certificado,
